@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Global Dominion",
+    "slug": "global-dominion",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "globaldominion",
+    "newArchEnabled": true,
+
+    "plugins": [
+      "expo-router"
+    ],
+
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.globaldominion.game"
+    },
+
+    "android": {
+      "package": "com.globaldominion.game",
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0F16"
+      }
+    },
+
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

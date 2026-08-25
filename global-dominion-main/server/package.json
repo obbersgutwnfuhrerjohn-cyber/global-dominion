@@ -1,0 +1,14 @@
+{
+  "name": "global-dominion-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Global Dominion MMO API \u2014 zero-dependency Node, JSON persistence",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

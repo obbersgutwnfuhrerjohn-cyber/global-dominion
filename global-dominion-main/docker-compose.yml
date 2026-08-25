@@ -1,0 +1,16 @@
+services:
+  api:
+    build: ./server
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATA_DIR=/app/data
+      - TICK_MS=10000
+    volumes:
+      - gd-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  gd-data:
