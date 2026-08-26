@@ -19,7 +19,8 @@ export default function EconomyScreen() {
     <Screen>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Muted>NATIONAL ECONOMY</Muted>
+          <View style={{ height: 3, width: 48, backgroundColor: COLORS.accentBright, marginBottom: 10 }} />
+          <Muted>NATIONAL ECONOMY · 1962</Muted>
           <Title>Resources & Markets</Title>
         </View>
 

@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [player, setPlayer] = useState<DemoPlayer | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(ENVIRONMENT.features.demoMode);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           getItem<boolean>(StorageKeys.demoMode),
         ]);
         if (storedPlayer && storedSession) {
-          const demo = demoFlag === true;
+          const demo = demoFlag === true && ENVIRONMENT.features.demoMode;
           setSession(storedSession);
           setIsDemoMode(demo);
           if (demo) {
@@ -135,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const register = useCallback(
-    async (email: string, password: string, displayName: string, username: string, countryId = "country_us") => {
+    async (email: string, password: string, displayName: string, username: string, countryId = "country_jps") => {
       if (!email.trim() || !password || !displayName.trim() || !username.trim()) {
         return { success: false, message: "All fields are required." };
       }

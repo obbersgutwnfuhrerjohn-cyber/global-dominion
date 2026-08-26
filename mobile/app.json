@@ -6,23 +6,30 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "scheme": "globaldominion",
-
+    "newArchEnabled": true,
     "plugins": [
       "expo-router"
     ],
-
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.globaldominion.game"
-    },
-
-    "android": {
-      "package": "com.globaldominion.game",
-      "adaptiveIcon": {
-        "backgroundColor": "#0A0F16"
+      "bundleIdentifier": "com.globaldominion.game",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
-
+    "android": {
+      "package": "com.globaldominion.game",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0A0C"
+      },
+      "permissions": [
+        "com.android.vending.BILLING",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
     "web": {
       "bundler": "metro"
     }

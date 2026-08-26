@@ -1,7 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useGame } from "../../context/GameContext";
+import { useAuth } from "../../context/AuthContext";
 import {
   Badge,
+  Button,
   Card,
   Screen,
   SectionHeader,
@@ -9,28 +11,157 @@ import {
   Title,
   Muted,
   Divider,
+  ProgressBar,
 } from "../../components/ui";
 import { COLORS } from "../../constants/colors";
+
+const MAP_LAYOUT: { id: string; flex: number }[] = [
+  { id: "country_gnr", flex: 2.2 },
+  { id: "country_jps", flex: 1.4 },
+  { id: "country_gar", flex: 1.2 },
+  { id: "country_ita", flex: 1 },
+  { id: "country_nz", flex: 0.8 },
+  { id: "country_rms", flex: 0.7 },
+  { id: "country_bra", flex: 1 },
+  { id: "country_serb", flex: 0.7 },
+];
 
 export default function WorldScreen() {
   const {
     countries,
     selectedCountryId,
     setSelectedCountryId,
+    supportIndependence,
+    declareIndependence,
+    startRevolution,
+    declareWar,
   } = useGame();
+  const { player } = useAuth();
 
   const selected = countries.find((c) => c.id === selectedCountryId);
+  const playerCountryId = player?.countryId ?? null;
+
+  const onSupportIndependence = () => {
+    if (!selected) return;
+    const res = supportIndependence(selected.id);
+    Alert.alert(res.success ? "Movement" : "Blocked", res.message);
+  };
+
+  const onDeclareIndependence = () => {
+    if (!selected) return;
+    Alert.alert(
+      "Declare Independence Day?",
+      `Requires ~70% independence movement. Current: ${selected.independenceMovement ?? 0}%.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Declare",
+          style: "destructive",
+          onPress: () => {
+            const res = declareIndependence(selected.id);
+            Alert.alert(res.success ? "Independence Day" : "Failed", res.message);
+          },
+        },
+      ]
+    );
+  };
+
+  const onStartRevolution = () => {
+    if (!selected) return;
+    Alert.alert(
+      "Start Revolution?",
+      `Organize independence struggle in ${selected.name}.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Organize",
+          style: "destructive",
+          onPress: () => {
+            const res = startRevolution(
+              selected.id,
+              "independence",
+              player?.displayName ?? "Provisional Committee"
+            );
+            Alert.alert(res.success ? "Revolution" : "Blocked", res.message);
+          },
+        },
+      ]
+    );
+  };
+
+  const onDeclareWar = () => {
+    if (!selected || !playerCountryId) return;
+    if (selected.id === playerCountryId) {
+      Alert.alert("War", "Select a foreign power to declare war on.");
+      return;
+    }
+    Alert.alert(
+      "Declare War?",
+      `${playerCountryId} → ${selected.name}. This opens an active front.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Declare War",
+          style: "destructive",
+          onPress: () => {
+            const res = declareWar(
+              playerCountryId,
+              selected.id,
+              `${player?.displayName ?? "Commander"}'s War`
+            );
+            Alert.alert(res.success ? "War" : "Blocked", res.message);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <Screen>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Muted>WORLD MAP</Muted>
-          <Title>Nations</Title>
+          <View style={styles.stripe} />
+          <Muted>GEOPOLITICAL THEATER · 1962</Muted>
+          <Title>World Map</Title>
         </View>
 
+        <Card style={styles.mapCard}>
+          <SectionHeader title="Strategic Overview" />
+          <View style={styles.mapGrid}>
+            {MAP_LAYOUT.map((slot) => {
+              const c = countries.find((x) => x.id === slot.id);
+              if (!c) return null;
+              const active = c.id === selectedCountryId;
+              return (
+                <Pressable
+                  key={c.id}
+                  onPress={() => setSelectedCountryId(c.id)}
+                  style={[
+                    styles.mapRegion,
+                    {
+                      flex: slot.flex,
+                      backgroundColor: active ? c.color : `${c.color}99`,
+                      borderColor: active ? COLORS.accentGold : COLORS.border,
+                      borderWidth: active ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <Text style={styles.mapCode}>{c.code}</Text>
+                  <Text style={styles.mapName} numberOfLines={2}>
+                    {c.name}
+                  </Text>
+                  <Text style={styles.mapBloc}>{c.bloc}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Muted>
+            GNR is the supreme power. GAR holds the western Balkans to Thessaloniki &amp; Ioannina.
+          </Muted>
+        </Card>
+
         <Card>
-          <SectionHeader title="Select a Country" />
+          <SectionHeader title="All Powers" />
           <View style={styles.grid}>
             {countries.map((c) => {
               const active = c.id === selectedCountryId;
@@ -70,18 +201,44 @@ export default function WorldScreen() {
         {selected ? (
           <Card>
             <View style={styles.selectedHeader}>
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.selectedName}>{selected.name}</Text>
                 <Muted>
-                  Capital: {selected.capital} • {selected.government}
+                  {selected.capital} · {selected.government} · {selected.region}
                 </Muted>
               </View>
               <Badge
                 text={selected.status.toUpperCase()}
-                tone={selected.status === "peace" ? "success" : "warning"}
+                tone={
+                  selected.status === "peace"
+                    ? "success"
+                    : selected.status === "at_war"
+                      ? "danger"
+                      : selected.status === "unstable" ||
+                          selected.status === "occupied"
+                        ? "warning"
+                        : "info"
+                }
               />
             </View>
             <Divider />
+            {selected.description ? (
+              <>
+                <Text style={styles.desc}>{selected.description}</Text>
+                <Divider />
+              </>
+            ) : null}
+
+            {selected.territories && selected.territories.length > 0 ? (
+              <>
+                <Text style={styles.smallLabel}>TERRITORIES</Text>
+                <Text style={styles.territories}>
+                  {selected.territories.join(" · ")}
+                </Text>
+                <Divider />
+              </>
+            ) : null}
+
             <View style={styles.row}>
               <Stat
                 label="POPULATION"
@@ -97,29 +254,166 @@ export default function WorldScreen() {
               <Stat
                 label="TREASURY"
                 value={`$${(selected.treasury / 1e9).toFixed(0)}B`}
+                gold
               />
-              <Stat label="MILITARY" value={selected.militaryStrength} />
+              <Stat
+                label="MILITARY"
+                value={selected.militaryStrength}
+                accent
+              />
               <Stat label="STABILITY" value={`${selected.stability}%`} />
             </View>
             <Divider />
-            <Muted>
-              Full interactive map (MapLibre / satellite layers) will connect
-              here once the backend world service is live. Existing map.ts
-              service is ready for API integration.
-            </Muted>
+            <Text style={styles.smallLabel}>STABILITY</Text>
+            <ProgressBar
+              value={selected.stability}
+              color={
+                selected.stability >= 70
+                  ? COLORS.success
+                  : selected.stability >= 50
+                    ? COLORS.warning
+                    : COLORS.danger
+              }
+            />
+            <View style={{ height: 10 }} />
+            <Text style={styles.smallLabel}>MILITARY STRENGTH</Text>
+            <ProgressBar
+              value={selected.militaryStrength}
+              color={
+                selected.id === "country_gnr"
+                  ? COLORS.accentBright
+                  : COLORS.accentGold
+              }
+            />
+            {selected.id === "country_gnr" ? (
+              <Muted>
+                Supreme power of the ordered world. Peer challenge only.
+              </Muted>
+            ) : null}
+
+            <Divider />
+            <Text style={styles.smallLabel}>
+              INDEPENDENCE MOVEMENT · {selected.independenceMovement ?? 0}%
+            </Text>
+            <ProgressBar
+              value={selected.independenceMovement ?? 0}
+              color={COLORS.warning}
+            />
+            {selected.independenceDay ? (
+              <Text style={styles.indyDay}>
+                Independence Day: {selected.independenceDay}
+              </Text>
+            ) : null}
+
+            {selected.allies && selected.allies.length > 0 ? (
+              <>
+                <Divider />
+                <Text style={styles.smallLabel}>ALLIES</Text>
+                <Text style={styles.territories}>
+                  {selected.allies
+                    .map(
+                      (id) =>
+                        countries.find((c) => c.id === id)?.code ?? id
+                    )
+                    .join(" · ")}
+                </Text>
+              </>
+            ) : null}
+
+            <Divider />
+            <SectionHeader title="Actions" />
+            <View style={styles.actions}>
+              {selected.canRevolt ? (
+                <>
+                  <Button
+                    title="Support Independence"
+                    variant="secondary"
+                    onPress={onSupportIndependence}
+                  />
+                  <View style={{ height: 8 }} />
+                  <Button
+                    title="Start Revolution"
+                    variant="danger"
+                    onPress={onStartRevolution}
+                  />
+                  <View style={{ height: 8 }} />
+                  <Button
+                    title="Declare Independence Day"
+                    variant="gold"
+                    onPress={onDeclareIndependence}
+                  />
+                  <View style={{ height: 8 }} />
+                </>
+              ) : (
+                <Muted>
+                  Open revolt is not viable under this regime.
+                </Muted>
+              )}
+              {playerCountryId && selected.id !== playerCountryId ? (
+                <Button
+                  title="Declare War"
+                  variant="danger"
+                  onPress={onDeclareWar}
+                />
+              ) : null}
+            </View>
           </Card>
         ) : null}
 
-        <View style={{ height: 24 }} />
+        <Card>
+          <SectionHeader title="Intelligence Brief" />
+          <Muted>
+            The Greater Nazi Reich stands supreme. Greater Albanian Reich —
+            ally of Berlin — holds Niš, Montenegro, Macedonia, Thessaloniki and
+            Ioannina. Occupied Serbia burns with independence fever. The Neutral
+            Zone remains the powder keg of the continent.
+          </Muted>
+        </Card>
+
+        <View style={{ height: 28 }} />
       </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    marginBottom: 16,
-    marginTop: 8,
+  header: { marginBottom: 16, marginTop: 4 },
+  stripe: {
+    height: 3,
+    width: 48,
+    backgroundColor: COLORS.accentBright,
+    marginBottom: 10,
+  },
+  mapCard: { paddingBottom: 14 },
+  mapGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    minHeight: 140,
+  },
+  mapRegion: {
+    minWidth: "30%",
+    minHeight: 72,
+    borderRadius: 8,
+    padding: 10,
+    justifyContent: "space-between",
+  },
+  mapCode: {
+    color: COLORS.paper,
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1,
+    opacity: 0.9,
+  },
+  mapName: {
+    color: COLORS.paper,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  mapBloc: {
+    color: COLORS.paper,
+    fontSize: 10,
+    opacity: 0.75,
   },
   grid: {
     flexDirection: "row",
@@ -129,14 +423,14 @@ const styles = StyleSheet.create({
   countryChip: {
     width: "48%",
     backgroundColor: COLORS.surfaceElevated,
-    borderRadius: 10,
+    borderRadius: 8,
     padding: 12,
     borderLeftWidth: 4,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   countryChipActive: {
-    borderColor: COLORS.accentBright,
+    borderColor: COLORS.accentGold,
     backgroundColor: COLORS.surfacePressed,
   },
   countryCode: {
@@ -145,30 +439,49 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1,
   },
-  countryCodeActive: {
-    color: COLORS.accentBright,
-  },
+  countryCodeActive: { color: COLORS.accentGold },
   countryName: {
     color: COLORS.textSecondary,
     fontSize: 13,
     fontWeight: "600",
     marginTop: 2,
   },
-  countryNameActive: {
-    color: COLORS.textPrimary,
-  },
+  countryNameActive: { color: COLORS.textPrimary },
   selectedHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    gap: 8,
   },
   selectedName: {
     color: COLORS.textPrimary,
     fontSize: 20,
     fontWeight: "800",
+    letterSpacing: 0.3,
   },
-  row: {
-    flexDirection: "row",
-    gap: 8,
+  desc: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    lineHeight: 19,
   },
+  row: { flexDirection: "row", gap: 8 },
+  smallLabel: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  territories: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  indyDay: {
+    color: COLORS.accentGold,
+    fontSize: 13,
+    fontWeight: "700",
+    marginTop: 8,
+  },
+  actions: { marginTop: 4 },
 });

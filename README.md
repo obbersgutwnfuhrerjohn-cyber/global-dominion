@@ -2,6 +2,8 @@
 
 A persistent geopolitical / economic MMO built with **Expo**, **React Native**, **TypeScript**, and a **zero-dependency Node** API.
 
+**Theme:** Alternate 1962 — *The Man in the High Castle* theater. The Greater Nazi Reich and Japanese Pacific States dominate; the Neutral Zone and Rocky Mountain States remain contested. Loyalty, hierarchy, and imperial power define progression.
+
 Players build influence across nations through politics, economy, military command, diplomacy, industry, research, and more.
 
 ---

@@ -1,33 +1,53 @@
+/**
+ * Global Dominion — The Man in the High Castle inspired palette
+ * Dark, oppressive, imperial. Blood-red authority, gold hierarchy,
+ * charcoal surveillance aesthetics of an alternate 1962.
+ */
 export const COLORS = {
-  background: "#05080D",
-  surface: "#0A1018",
-  surfaceElevated: "#101923",
-  surfacePressed: "#16212D",
+  // Core surfaces
+  background: "#0A0A0C",
+  surface: "#121216",
+  surfaceElevated: "#1A1A20",
+  surfacePressed: "#24242C",
 
-  textPrimary: "#F2F5F7",
-  textSecondary: "#AAB4C0",
-  textMuted: "#6F7D8A",
-  textDisabled: "#4D5966",
+  // Text
+  textPrimary: "#F4F0E6",
+  textSecondary: "#B8B0A0",
+  textMuted: "#7A7468",
+  textDisabled: "#4A4640",
 
-  border: "#1C2935",
-  borderStrong: "#2A3A49",
+  // Borders
+  border: "#2A2824",
+  borderStrong: "#3E3A34",
 
-  accent: "#6F8295",
-  accentBright: "#9BAFC2",
+  // Authority accents (Reich red + imperial gold)
+  accent: "#8B1A1A",
+  accentBright: "#C41E1E",
+  accentGold: "#C9A227",
+  accentGoldDim: "#8A7020",
 
-  success: "#4CAF7D",
-  warning: "#D7A84A",
-  danger: "#D35C5C",
-  info: "#5D91C7",
+  // Status
+  success: "#3D7A4A",
+  warning: "#C9A227",
+  danger: "#C41E1E",
+  info: "#5A6B7A",
 
-  mapOcean: "#08121B",
-  mapLand: "#18231F",
-  mapLandSelected: "#344A3E",
-  mapBorder: "#52645B",
+  // Map
+  mapOcean: "#0C1014",
+  mapLand: "#1C1E18",
+  mapLandSelected: "#2A3228",
+  mapBorder: "#4A5248",
+  mapReich: "#5C1212",
+  mapPacific: "#1A2A1A",
+  mapNeutral: "#3A3428",
+  mapRocky: "#2A2A30",
 
+  // Utility
   transparent: "transparent",
   white: "#FFFFFF",
-  black: "#000000"
+  black: "#000000",
+  propagandaRed: "#9B1B1B",
+  paper: "#E8E0D0",
 } as const;
 
 export type ColorName = keyof typeof COLORS;

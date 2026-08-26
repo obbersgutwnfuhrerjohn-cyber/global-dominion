@@ -11,12 +11,13 @@ import {
   Title,
   Muted,
   Button,
+  ProgressBar,
 } from "../../components/ui";
 import { COLORS } from "../../constants/colors";
 
 export default function CommandScreen() {
   const { player } = useAuth();
-  const { countries, events, resources, tickCount, advanceTick } = useGame();
+  const { countries, events, resources, tickCount, advanceTick, wars, revolutions } = useGame();
 
   const country = countries.find((c) => c.id === player?.countryId);
 
@@ -25,21 +26,32 @@ export default function CommandScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
-            <Muted>COMMAND CENTER</Muted>
+            <View style={styles.stripe} />
+            <Muted>COMMAND CENTER · ORDERED WORLD</Muted>
             <Title>{player?.displayName ?? "Commander"}</Title>
           </View>
-          <Badge text={player?.rank?.toUpperCase() ?? "CITIZEN"} tone="info" />
+          <Badge
+            text={(player?.rank ?? "citizen").toUpperCase()}
+            tone="gold"
+          />
         </View>
 
         <Card>
           <View style={styles.row}>
             <Stat label="LEVEL" value={player?.level ?? 1} accent />
-            <Stat label="XP" value={player?.experience ?? 0} />
-            <Stat label="WEALTH" value={`${player?.wealth ?? 0} ${player?.currency ?? "GD$"}`} />
+            <Stat
+              label="XP"
+              value={player?.experience ?? 0}
+            />
+            <Stat
+              label="WEALTH"
+              value={`${player?.wealth ?? 0} ${player?.currency ?? "¥"}`}
+              gold
+            />
           </View>
           <Divider />
           <View style={styles.row}>
-            <Stat label="PRESTIGE" value={player?.prestige ?? 0} />
+            <Stat label="PRESTIGE" value={player?.prestige ?? 0} gold />
             <Stat label="REPUTATION" value={player?.reputation ?? 50} />
             <Stat label="STATUS" value={player?.status ?? "online"} />
           </View>
@@ -47,10 +59,11 @@ export default function CommandScreen() {
 
         {country ? (
           <Card>
-            <SectionHeader title="Your Nation" />
+            <SectionHeader title="Your Territory" />
             <Text style={styles.countryName}>{country.name}</Text>
             <Muted>
-              {country.capital} • {country.government} • {country.status}
+              {country.capital} · {country.government} · {country.bloc} ·{" "}
+              {country.status}
             </Muted>
             <Divider />
             <View style={styles.row}>
@@ -64,6 +77,14 @@ export default function CommandScreen() {
               />
               <Stat label="STABILITY" value={`${country.stability}%`} />
             </View>
+            <Divider />
+            <Text style={styles.smallLabel}>STABILITY</Text>
+            <ProgressBar
+              value={country.stability}
+              color={
+                country.stability >= 70 ? COLORS.success : COLORS.warning
+              }
+            />
           </Card>
         ) : null}
 
@@ -78,7 +99,7 @@ export default function CommandScreen() {
               />
             }
           />
-          {resources.slice(0, 4).map((r) => (
+          {resources.slice(0, 5).map((r) => (
             <View key={r.type} style={styles.resourceRow}>
               <Text style={styles.resourceName}>{r.name}</Text>
               <Text style={styles.resourceValue}>
@@ -112,7 +133,29 @@ export default function CommandScreen() {
           ))}
         </Card>
 
-        <View style={{ height: 24 }} />
+
+        <Card>
+          <SectionHeader title="Conflict Snapshot" />
+          <View style={styles.row}>
+            <Stat label="WARS" value={wars.length} accent />
+            <Stat label="REVOLUTIONS" value={revolutions.length} />
+            <Stat label="POWERS" value={countries.length} />
+          </View>
+          <Divider />
+          <Muted>
+            GNR is the supreme military power. Use World to declare war or Independence Day; Military to resolve battles.
+          </Muted>
+        </Card>
+
+        <Card>
+          <SectionHeader title="Directive" />
+          <Muted>
+            Expand influence within your bloc. Secure resources. Monitor the
+            Neutral Zone. Loyalty is survival; ambition is power.
+          </Muted>
+        </Card>
+
+        <View style={{ height: 28 }} />
       </ScrollView>
     </Screen>
   );
@@ -124,7 +167,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: 16,
-    marginTop: 8,
+    marginTop: 4,
+  },
+  stripe: {
+    height: 3,
+    width: 48,
+    backgroundColor: COLORS.accentBright,
+    marginBottom: 10,
   },
   row: {
     flexDirection: "row",
@@ -135,6 +184,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 2,
+  },
+  smallLabel: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    marginBottom: 4,
   },
   resourceRow: {
     flexDirection: "row",

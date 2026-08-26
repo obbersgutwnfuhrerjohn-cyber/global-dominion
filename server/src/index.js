@@ -9,6 +9,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
+const { verifyStorePurchase, acknowledgeGooglePurchase, consumeGooglePurchase } = require("./iapVerification");
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -353,6 +354,8 @@ let events = [
 const players = new Map(); // id -> player
 const playersByEmail = new Map();
 const sessions = new Map(); // accessToken -> session
+const shopPurchases = new Map(); // transactionId -> record
+const playerEntitlements = new Map(); // playerId -> { marks, unlocks, purchases[] }
 const wars = [];
 const companies = [];
 const accounts = [];
@@ -390,6 +393,8 @@ function saveState() {
       market,
       events,
       relations: Array.from(relations.entries()),
+      shopPurchases: Array.from(shopPurchases.entries()),
+      playerEntitlements: Array.from(playerEntitlements.entries()),
     };
     fs.writeFileSync(PERSIST_FILE, JSON.stringify(payload, null, 0));
   } catch (err) {
@@ -425,6 +430,8 @@ function loadState() {
       relations.clear();
       for (const [k, v] of data.relations) relations.set(k, v);
     }
+    if (Array.isArray(data.shopPurchases)) { shopPurchases.clear(); for (const [k, v] of data.shopPurchases) shopPurchases.set(k, v); }
+    if (Array.isArray(data.playerEntitlements)) { playerEntitlements.clear(); for (const [k, v] of data.playerEntitlements) playerEntitlements.set(k, v); }
     if (typeof data.tickCount === "number") tickCount = data.tickCount;
     console.log(`[persist] loaded ${players.size} players, ${sessions.size} sessions from disk`);
     return true;
@@ -761,6 +768,11 @@ async function handle(req, res) {
     // ── COMPANIES ──
     if (path.startsWith("/api/companies")) {
       return await handleCompanies(req, res, path, method, url, requestId);
+    }
+
+    // ── SHOP / IAP ──
+    if (path.startsWith("/api/shop")) {
+      return await handleShop(req, res, path, method, requestId);
     }
 
     // resources stubs
@@ -1490,6 +1502,144 @@ async function handleCompanies(req, res, path, method, url, requestId) {
 }
 
 // ─── start ─────────────────────────────────────────────────
+
+
+/** In-app purchase validation + entitlement ledger */
+
+const SHOP_CATALOG = {
+  marks_500: { marks: 500 },
+  marks_1200: { marks: 1200 },
+  marks_6500: { marks: 6500 },
+  marks_14000: { marks: 14000 },
+  boost_xp_24h: { unlocks: ["boost_xp_50"] },
+  boost_production_24h: { unlocks: ["boost_production_25"] },
+  boost_loyalty_pack: { loyalty: 15 },
+  mil_volunteer_legion: { unlocks: ["unit_volunteer_legion"] },
+  mil_armor_detachment: { unlocks: ["unit_armor_brigade"] },
+  mil_war_bonds: { wealth: 25000 },
+  pol_influence_pack: { influence: 25 },
+  pol_prestige_order: { prestige: 10, unlocks: ["medal_order_of_merit"] },
+  pol_revolution_fund: { unlocks: ["item_covert_fund"] },
+  cos_banner_reich: { unlocks: ["banner_reich"] },
+  cos_banner_pacific: { unlocks: ["banner_pacific"] },
+  cos_title_director: { unlocks: ["title_provincial_director"] },
+  bundle_starter: { marks: 2000, influence: 5, unlocks: ["boost_xp_50"] },
+  bundle_commander: { marks: 6500, wealth: 25000, unlocks: ["unit_armor_brigade"] },
+};
+
+async function handleShop(req, res, path, method, requestId) {
+  if (method === "GET" && path === "/api/shop/catalog") {
+    return ok(res, { products: Object.keys(SHOP_CATALOG) }, 200, requestId);
+  }
+
+  if (method === "GET" && path === "/api/shop/entitlements") {
+    const auth = getPlayerFromReq(req);
+    if (!auth) return fail(res, 401, "unauthorized", "Authentication required.", false, requestId);
+    const ent = playerEntitlements.get(auth.player.id) || { marks: 0, unlocks: [], purchases: [] };
+    return ok(res, ent, 200, requestId);
+  }
+
+  if (method === "POST" && path === "/api/shop/validate") {
+    const auth = getPlayerFromReq(req);
+    if (!auth) return fail(res, 401, "unauthorized", "Authentication required.", false, requestId);
+    const body = await readBody(req);
+    const playerId = auth.player.id;
+    if (body.playerId && body.playerId !== playerId) {
+      return fail(res, 403, "forbidden", "Purchase account mismatch.", false, requestId);
+    }
+
+    const productId = body.productId;
+    const catalog = SHOP_CATALOG[productId];
+    if (!catalog) {
+      return fail(res, 400, "validation_error", "Unknown product.", false, requestId);
+    }
+
+    let txn = body.transactionId || id("txn");
+
+    if (shopPurchases.has(txn)) {
+      return ok(
+        res,
+        { success: true, message: "Already processed.", transactionId: txn, duplicate: true },
+        200,
+        requestId
+      );
+    }
+
+    if (body.testPurchase) {
+      if (process.env.NODE_ENV === "production" || process.env.ALLOW_TEST_IAP !== "1") {
+        return fail(res, 403, "forbidden", "Test purchases are disabled.", false, requestId);
+      }
+    } else {
+      try {
+        const verified = await verifyStorePurchase({
+          platform: body.platform,
+          productId,
+          storeProductId: body.storeProductId,
+          receipt: body.receipt,
+          transactionId: body.transactionId,
+        });
+        if (verified.transactionId) {
+          txn = verified.transactionId;
+          if (shopPurchases.has(txn)) {
+            return ok(res, { success: true, message: "Already processed.", transactionId: txn, duplicate: true }, 200, requestId);
+          }
+        }
+        if (body.platform === "android") {
+          await acknowledgeGooglePurchase({ productId: body.storeProductId, purchaseToken: body.receipt });
+          if (catalog.marks || catalog.wealth || catalog.influence || catalog.prestige || catalog.loyalty) {
+            await consumeGooglePurchase({ productId: body.storeProductId, purchaseToken: body.receipt });
+          }
+        }
+      } catch (err) {
+        console.error("[iap] verification failed:", err.message);
+        return fail(res, 400, "purchase_verification_failed", "The store could not verify this purchase.", false, requestId);
+      }
+    }
+
+    shopPurchases.set(txn, {
+      playerId,
+      productId,
+      storeProductId: body.storeProductId,
+      platform: body.platform,
+      at: now(),
+    });
+
+    const ent = playerEntitlements.get(playerId) || { marks: 0, unlocks: [], purchases: [] };
+    if (catalog.marks) ent.marks += catalog.marks;
+    if (catalog.unlocks) {
+      ent.unlocks = Array.from(new Set([...(ent.unlocks || []), ...catalog.unlocks]));
+    }
+    ent.purchases = ent.purchases || [];
+    ent.purchases.push({ productId, transactionId: txn, at: now() });
+    playerEntitlements.set(playerId, ent);
+
+    // Apply soft grants to player record when present
+    const player = players.get(playerId);
+    if (player) {
+      if (catalog.wealth) player.wealth = (player.wealth || 0) + catalog.wealth;
+      if (catalog.influence) player.influence = (player.influence || 0) + catalog.influence;
+      if (catalog.prestige) player.prestige = (player.prestige || 0) + catalog.prestige;
+      if (catalog.loyalty) player.loyalty = (player.loyalty || 0) + catalog.loyalty;
+    }
+    saveState();
+
+    return ok(
+      res,
+      {
+        success: true,
+        message: "Purchase validated.",
+        transactionId: txn,
+        grants: catalog,
+        entitlements: ent,
+      },
+      200,
+      requestId
+    );
+  }
+
+  fail(res, 404, "not_found", "Shop endpoint not found.", false, requestId);
+}
+
 
 const server = http.createServer((req, res) => {
   handle(req, res);

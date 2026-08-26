@@ -3,16 +3,18 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { COLORS } from "../constants/colors";
 import { Button } from "../components/ui";
+import { ENVIRONMENT, IS_PRODUCTION } from "../config/environment";
 
 export default function WelcomeScreen() {
   const { isLoading, isAuthenticated, enterDemo } = useAuth();
   const router = useRouter();
+  const allowDemo = ENVIRONMENT.features.demoMode && !IS_PRODUCTION;
 
   if (isLoading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color={COLORS.accentBright} />
-        <Text style={styles.status}>INITIALIZING WORLD…</Text>
+        <Text style={styles.status}>CONNECTING TO WORLD SERVER…</Text>
       </View>
     );
   }
@@ -24,21 +26,19 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.logo}>GLOBAL</Text>
-        <Text style={styles.title}>DOMINION</Text>
+        <Text style={styles.logo}>THE ORDERED WORLD</Text>
+        <Text style={styles.title}>GLOBAL</Text>
+        <Text style={styles.titleMain}>DOMINION</Text>
         <View style={styles.divider} />
         <Text style={styles.subtitle}>
-          A persistent geopolitical world.{"\n"}
-          Build nations. Command armies. Shape history.
+          1962. The Axis holds the planet.{"\n"}
+          Serve. Rise. Shape the empire.
         </Text>
 
         <View style={styles.actions}>
           <Button
-            title="Enter Demo World"
-            onPress={async () => {
-              await enterDemo();
-              router.replace("/(tabs)");
-            }}
+            title="Create Account"
+            onPress={() => router.push("/(auth)/register")}
           />
           <View style={{ height: 12 }} />
           <Button
@@ -46,16 +46,26 @@ export default function WelcomeScreen() {
             variant="secondary"
             onPress={() => router.push("/(auth)/login")}
           />
-          <View style={{ height: 8 }} />
-          <Button
-            title="Create Account"
-            variant="ghost"
-            onPress={() => router.push("/(auth)/register")}
-          />
+          {allowDemo ? (
+            <>
+              <View style={{ height: 16 }} />
+              <Button
+                title="Developer Offline Mode"
+                variant="ghost"
+                onPress={async () => {
+                  await enterDemo();
+                  router.replace("/(tabs)");
+                }}
+              />
+            </>
+          ) : null}
         </View>
       </View>
 
-      <Text style={styles.version}>GLOBAL DOMINION • 1.0.0 • DEMO MODE</Text>
+      <Text style={styles.version}>
+        GLOBAL DOMINION · v1.0.0 ·{" "}
+        {IS_PRODUCTION ? "PRODUCTION" : ENVIRONMENT.name.toUpperCase()}
+      </Text>
     </View>
   );
 }
@@ -74,22 +84,28 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   logo: {
+    color: COLORS.accentGold,
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 4,
+    marginBottom: 12,
+  },
+  title: {
     color: COLORS.textMuted,
     fontSize: 18,
     fontWeight: "700",
     letterSpacing: 8,
-    marginBottom: 4,
   },
-  title: {
+  titleMain: {
     color: COLORS.textPrimary,
     fontSize: 42,
     fontWeight: "900",
-    letterSpacing: 5,
+    letterSpacing: 6,
   },
   divider: {
     width: 90,
-    height: 2,
-    backgroundColor: COLORS.accent,
+    height: 3,
+    backgroundColor: COLORS.accentBright,
     marginVertical: 28,
   },
   subtitle: {

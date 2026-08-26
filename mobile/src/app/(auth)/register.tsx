@@ -21,7 +21,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
-  const [countryId, setCountryId] = useState(countries[0]?.id ?? "country_us");
+  const [countryId, setCountryId] = useState(countries[0]?.id ?? "country_jps");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 

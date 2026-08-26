@@ -7,10 +7,10 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   return (
     <Text
       style={{
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: focused ? "800" : "600",
-        color: focused ? COLORS.accentBright : COLORS.textMuted,
-        letterSpacing: 0.3,
+        color: focused ? COLORS.accentGold : COLORS.textMuted,
+        letterSpacing: 0.6,
       }}
     >
       {label}
@@ -37,7 +37,7 @@ export default function TabsLayout() {
           paddingBottom: 8,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: COLORS.accentBright,
+        tabBarActiveTintColor: COLORS.accentGold,
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarShowLabel: false,
       }}
@@ -56,7 +56,7 @@ export default function TabsLayout() {
         options={{
           title: "World",
           tabBarIcon: ({ focused }) => (
-            <TabIcon label="WORLD" focused={focused} />
+            <TabIcon label="MAP" focused={focused} />
           ),
         }}
       />
@@ -84,6 +84,15 @@ export default function TabsLayout() {
           title: "Politics",
           tabBarIcon: ({ focused }) => (
             <TabIcon label="POL" focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="shop"
+        options={{
+          title: "Shop",
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="SHOP" focused={focused} />
           ),
         }}
       />

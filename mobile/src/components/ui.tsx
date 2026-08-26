@@ -56,7 +56,7 @@ export function Button({
 }: {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "danger" | "ghost";
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "gold";
   disabled?: boolean;
   loading?: boolean;
 }) {
@@ -67,10 +67,16 @@ export function Button({
         ? styles.btnSecondary
         : variant === "danger"
           ? styles.btnDanger
-          : styles.btnGhost;
+          : variant === "gold"
+            ? styles.btnGold
+            : styles.btnGhost;
 
   const textStyle =
-    variant === "ghost" ? styles.btnGhostText : styles.btnText;
+    variant === "ghost"
+      ? styles.btnGhostText
+      : variant === "gold"
+        ? styles.btnGoldText
+        : styles.btnText;
 
   return (
     <Pressable
@@ -114,15 +120,23 @@ export function Stat({
   label,
   value,
   accent,
+  gold,
 }: {
   label: string;
   value: string | number;
   accent?: boolean;
+  gold?: boolean;
 }) {
   return (
     <View style={styles.stat}>
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={[styles.statValue, accent && styles.statAccent]}>
+      <Text
+        style={[
+          styles.statValue,
+          accent && styles.statAccent,
+          gold && styles.statGold,
+        ]}
+      >
         {value}
       </Text>
     </View>
@@ -138,7 +152,7 @@ export function Badge({
   tone = "neutral",
 }: {
   text: string;
-  tone?: "neutral" | "success" | "warning" | "danger" | "info";
+  tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold";
 }) {
   const bg =
     tone === "success"
@@ -149,7 +163,10 @@ export function Badge({
           ? COLORS.danger
           : tone === "info"
             ? COLORS.info
-            : COLORS.surfaceElevated;
+            : tone === "gold"
+              ? COLORS.accentGold
+              : COLORS.surfacePressed;
+
   return (
     <View style={[styles.badge, { backgroundColor: bg }]}>
       <Text style={styles.badgeText}>{text}</Text>
@@ -168,6 +185,25 @@ export function SectionHeader({
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {action}
+    </View>
+  );
+}
+
+export function ProgressBar({
+  value,
+  max = 100,
+  color = COLORS.accentBright,
+}: {
+  value: number;
+  max?: number;
+  color?: string;
+}) {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  return (
+    <View style={styles.progressTrack}>
+      <View
+        style={[styles.progressFill, { width: `${pct}%`, backgroundColor: color }]}
+      />
     </View>
   );
 }
@@ -191,7 +227,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontSize: 24,
     fontWeight: "800",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   subtitle: {
     color: COLORS.textSecondary,
@@ -201,17 +237,19 @@ const styles = StyleSheet.create({
   muted: {
     color: COLORS.textMuted,
     fontSize: 13,
+    lineHeight: 18,
   },
   label: {
     color: COLORS.textSecondary,
     fontSize: 12,
     fontWeight: "600",
     marginBottom: 6,
-    letterSpacing: 0.4,
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
   },
   btn: {
     height: 48,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
@@ -227,6 +265,11 @@ const styles = StyleSheet.create({
   btnDanger: {
     backgroundColor: COLORS.danger,
   },
+  btnGold: {
+    backgroundColor: COLORS.accentGoldDim,
+    borderWidth: 1,
+    borderColor: COLORS.accentGold,
+  },
   btnGhost: {
     backgroundColor: "transparent",
   },
@@ -240,7 +283,13 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontSize: 15,
     fontWeight: "700",
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
+  },
+  btnGoldText: {
+    color: COLORS.paper,
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
   btnGhostText: {
     color: COLORS.accentBright,
@@ -252,7 +301,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 48,
-    borderRadius: 10,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.surfaceElevated,
@@ -274,18 +323,22 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: COLORS.textMuted,
-    fontSize: 11,
-    fontWeight: "600",
-    letterSpacing: 0.5,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.8,
     marginBottom: 4,
+    textTransform: "uppercase",
   },
   statValue: {
     color: COLORS.textPrimary,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "700",
   },
   statAccent: {
     color: COLORS.accentBright,
+  },
+  statGold: {
+    color: COLORS.accentGold,
   },
   divider: {
     height: 1,
@@ -294,26 +347,38 @@ const styles = StyleSheet.create({
   },
   badge: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingVertical: 4,
+    borderRadius: 4,
     alignSelf: "flex-start",
   },
   badgeText: {
     color: COLORS.white,
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 0.3,
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 0.6,
   },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 10,
-    marginTop: 8,
+    marginTop: 4,
   },
   sectionTitle: {
     color: COLORS.textPrimary,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
+    letterSpacing: 0.4,
+  },
+  progressTrack: {
+    height: 6,
+    backgroundColor: COLORS.surfacePressed,
+    borderRadius: 3,
+    overflow: "hidden",
+    marginTop: 4,
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 3,
   },
 });
