@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,21 +13,25 @@ import { Button, Input, Screen, Title, Subtitle } from "../../components/ui";
 import { COLORS } from "../../constants/colors";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [isAuthenticated, router]);
+
   const onSubmit = async () => {
     setError("");
     setLoading(true);
     try {
       const result = await login(email.trim(), password);
-      if (result.success) {
-        router.replace("/(tabs)");
-      } else {
+      if (!result.success) {
         setError(result.message);
       }
     } finally {
@@ -79,7 +83,7 @@ export default function LoginScreen() {
           </View>
 
           <Text style={styles.hint}>
-            Sign in with the account you created on the live game server.
+            Works offline on this device. Connects to the live server automatically when available.
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>

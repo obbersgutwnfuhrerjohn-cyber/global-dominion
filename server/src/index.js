@@ -128,108 +128,36 @@ function getBearer(req) {
 // ─── in-memory store ───────────────────────────────────────
 
 const countries = new Map([
-  [
-    "country_us",
-    {
-      id: "country_us",
-      name: "United States",
-      code: "USA",
-      capital: "Washington",
-      population: 331000000,
-      gdp: 25000000000000,
-      government: "presidential",
-      status: "peace",
-      treasury: 1200000000000,
-      militaryStrength: 92,
-      stability: 78,
-      color: "#3B5998",
-    },
-  ],
-  [
-    "country_cn",
-    {
-      id: "country_cn",
-      name: "China",
-      code: "CHN",
-      capital: "Beijing",
-      population: 1412000000,
-      gdp: 18000000000000,
-      government: "hybrid",
-      status: "peace",
-      treasury: 980000000000,
-      militaryStrength: 88,
-      stability: 82,
-      color: "#C8102E",
-    },
-  ],
-  [
-    "country_eu",
-    {
-      id: "country_eu",
-      name: "European Federation",
-      code: "EUR",
-      capital: "Brussels",
-      population: 450000000,
-      gdp: 16000000000000,
-      government: "parliamentary",
-      status: "peace",
-      treasury: 750000000000,
-      militaryStrength: 75,
-      stability: 71,
-      color: "#003399",
-    },
-  ],
-  [
-    "country_ru",
-    {
-      id: "country_ru",
-      name: "Russian Federation",
-      code: "RUS",
-      capital: "Moscow",
-      population: 144000000,
-      gdp: 2200000000000,
-      government: "presidential",
-      status: "peace",
-      treasury: 320000000000,
-      militaryStrength: 81,
-      stability: 64,
-      color: "#D52B1E",
-    },
-  ],
-  [
-    "country_in",
-    {
-      id: "country_in",
-      name: "India",
-      code: "IND",
-      capital: "New Delhi",
-      population: 1408000000,
-      gdp: 3700000000000,
-      government: "parliamentary",
-      status: "peace",
-      treasury: 410000000000,
-      militaryStrength: 72,
-      stability: 68,
-      color: "#FF9933",
-    },
-  ],
-  [
-    "country_br",
-    {
-      id: "country_br",
-      name: "Brazil",
-      code: "BRA",
-      capital: "Brasília",
-      population: 214000000,
-      gdp: 2100000000000,
-      government: "presidential",
-      status: "peace",
-      treasury: 180000000000,
-      militaryStrength: 55,
-      stability: 61,
-      color: "#009C3B",
-    },
-  ],
+  ["country_gnr", {
+    id: "country_gnr", name: "Greater German Reich", code: "GNR", capital: "Berlin",
+    population: 480000000, gdp: 22000000000000, government: "totalitarian", status: "peace",
+    treasury: 6200000000000, militaryStrength: 99, stability: 92, color: "#8B1A1A",
+    bloc: "Axis", region: "Central & Northern Europe", superpower: true,
+  }],
+  ["country_gar", {
+    id: "country_gar", name: "Greater Albanian Reich", code: "GAR", capital: "Tirana",
+    population: 92000000, gdp: 3800000000000, government: "fascist", status: "peace",
+    treasury: 890000000000, militaryStrength: 94, stability: 86, color: "#6B1A2A",
+    bloc: "Axis", region: "Full Balkans · Slavic South · All Greece", superpower: true,
+  }],
+  ["country_jps", {
+    id: "country_jps", name: "Japanese Pacific Empire", code: "JPE", capital: "San Francisco",
+    population: 165000000, gdp: 9800000000000, government: "imperial", status: "peace",
+    treasury: 2100000000000, militaryStrength: 96, stability: 88, color: "#1A3A1A",
+    bloc: "Axis", region: "Pacific Coast", superpower: true,
+  }],
+  ["country_nz", {
+    id: "country_nz", name: "Neutral Zone", code: "NZ", capital: "Denver",
+    population: 12000000, gdp: 180000000000, government: "fractured", status: "unstable",
+    treasury: 12000000000, militaryStrength: 28, stability: 38, color: "#6B5A3A",
+    bloc: "Neutral", region: "Rocky Mountains", superpower: false,
+  }],
+  ["country_rms", {
+    id: "country_rms", name: "Rocky Mountain States", code: "RMS", capital: "Cheyenne",
+    population: 8500000, gdp: 95000000000, government: "provisional", status: "tense",
+    treasury: 8000000000, militaryStrength: 35, stability: 52, color: "#3A3A48",
+    bloc: "Contested", region: "Interior West", superpower: false,
+  }],
 ]);
 
 const resourceTypes = [
@@ -262,7 +190,7 @@ const units = new Map([
     "unit_1",
     {
       id: "unit_1",
-      countryId: "country_us",
+      countryId: "country_jps",
       type: "infantry",
       name: "1st Infantry Division",
       size: 12000,
@@ -276,7 +204,7 @@ const units = new Map([
     "unit_2",
     {
       id: "unit_2",
-      countryId: "country_us",
+      countryId: "country_jps",
       type: "armor",
       name: "3rd Armored Brigade",
       size: 4500,
@@ -290,7 +218,7 @@ const units = new Map([
     "unit_3",
     {
       id: "unit_3",
-      countryId: "country_us",
+      countryId: "country_jps",
       type: "fighter",
       name: "Air Wing Alpha",
       size: 48,
@@ -304,9 +232,9 @@ const units = new Map([
     "unit_4",
     {
       id: "unit_4",
-      countryId: "country_cn",
+      countryId: "country_gnr",
       type: "infantry",
-      name: "Eastern Garrison",
+      name: "Berlin Garrison",
       size: 28000,
       location: "Coastal Command",
       morale: 80,
@@ -331,7 +259,7 @@ let events = [
     description: "Major powers agree on temporary tariff reductions.",
     type: "diplomacy",
     timestamp: new Date(Date.now() - 3600000).toISOString(),
-    countryIds: ["country_us", "country_cn", "country_eu"],
+    countryIds: ["country_gnr", "country_jps", "country_gar"],
   },
   {
     id: "evt_2",
@@ -339,7 +267,7 @@ let events = [
     description: "Steel production lags behind industrial demand.",
     type: "economy",
     timestamp: new Date(Date.now() - 7200000).toISOString(),
-    countryIds: ["country_eu", "country_in"],
+    countryIds: ["country_nz", "country_rms"],
   },
   {
     id: "evt_3",
@@ -770,10 +698,7 @@ async function handle(req, res) {
       return await handleCompanies(req, res, path, method, url, requestId);
     }
 
-    // ── SHOP / IAP ──
-    if (path.startsWith("/api/shop")) {
-      return await handleShop(req, res, path, method, requestId);
-    }
+
 
     // resources stubs
     if (path.startsWith("/api/resources")) {
@@ -796,7 +721,7 @@ async function handleAuth(req, res, path, method, requestId) {
     const password = String(body.password || "");
     const displayName = String(body.displayName || "").trim();
     const username = String(body.username || email.split("@")[0] || "citizen").trim().toLowerCase();
-    const countryId = String(body.countryId || "country_us");
+    const countryId = String(body.countryId || "country_jps");
     if (!email || !password || !displayName || !username) {
       return fail(res, 400, "validation_error", "email, password, displayName and username are required.", false, requestId);
     }
@@ -831,7 +756,7 @@ async function handleAuth(req, res, path, method, requestId) {
       prestige: 0,
       reputation: 50,
       wealth: 2500,
-      currency: "GD$",
+      currency: "¥",
       status: "online",
       career: "civilian",
       biography: "A new citizen of the global order.",
@@ -1164,7 +1089,7 @@ async function handleEconomy(req, res, path, method, url, requestId) {
     );
   }
   if (method === "GET" && path === "/api/economy/resources") {
-    const countryId = url.searchParams.get("countryId") || "country_us";
+    const countryId = url.searchParams.get("countryId") || "country_jps";
     return ok(
       res,
       resources.filter((r) => r.countryId === countryId),
@@ -1211,7 +1136,7 @@ async function handleMilitary(req, res, path, method, url, requestId) {
         {
           id: "base_1",
           name: "Central Command",
-          countryId: "country_us",
+          countryId: "country_jps",
           location: "Capital Region",
           capacity: 50000,
           occupied: 16500,
@@ -1379,7 +1304,7 @@ async function handleBanking(req, res, path, method, requestId) {
       res,
       [
         { id: "bank_global", name: "Global Dominion Central Bank", countryId: null, interestRate: 2.5 },
-        { id: "bank_national", name: "National Commercial Bank", countryId: "country_us", interestRate: 3.1 },
+        { id: "bank_national", name: "National Commercial Bank", countryId: "country_jps", interestRate: 3.1 },
       ],
       200,
       requestId
@@ -1502,143 +1427,6 @@ async function handleCompanies(req, res, path, method, url, requestId) {
 }
 
 // ─── start ─────────────────────────────────────────────────
-
-
-/** In-app purchase validation + entitlement ledger */
-
-const SHOP_CATALOG = {
-  marks_500: { marks: 500 },
-  marks_1200: { marks: 1200 },
-  marks_6500: { marks: 6500 },
-  marks_14000: { marks: 14000 },
-  boost_xp_24h: { unlocks: ["boost_xp_50"] },
-  boost_production_24h: { unlocks: ["boost_production_25"] },
-  boost_loyalty_pack: { loyalty: 15 },
-  mil_volunteer_legion: { unlocks: ["unit_volunteer_legion"] },
-  mil_armor_detachment: { unlocks: ["unit_armor_brigade"] },
-  mil_war_bonds: { wealth: 25000 },
-  pol_influence_pack: { influence: 25 },
-  pol_prestige_order: { prestige: 10, unlocks: ["medal_order_of_merit"] },
-  pol_revolution_fund: { unlocks: ["item_covert_fund"] },
-  cos_banner_reich: { unlocks: ["banner_reich"] },
-  cos_banner_pacific: { unlocks: ["banner_pacific"] },
-  cos_title_director: { unlocks: ["title_provincial_director"] },
-  bundle_starter: { marks: 2000, influence: 5, unlocks: ["boost_xp_50"] },
-  bundle_commander: { marks: 6500, wealth: 25000, unlocks: ["unit_armor_brigade"] },
-};
-
-async function handleShop(req, res, path, method, requestId) {
-  if (method === "GET" && path === "/api/shop/catalog") {
-    return ok(res, { products: Object.keys(SHOP_CATALOG) }, 200, requestId);
-  }
-
-  if (method === "GET" && path === "/api/shop/entitlements") {
-    const auth = getPlayerFromReq(req);
-    if (!auth) return fail(res, 401, "unauthorized", "Authentication required.", false, requestId);
-    const ent = playerEntitlements.get(auth.player.id) || { marks: 0, unlocks: [], purchases: [] };
-    return ok(res, ent, 200, requestId);
-  }
-
-  if (method === "POST" && path === "/api/shop/validate") {
-    const auth = getPlayerFromReq(req);
-    if (!auth) return fail(res, 401, "unauthorized", "Authentication required.", false, requestId);
-    const body = await readBody(req);
-    const playerId = auth.player.id;
-    if (body.playerId && body.playerId !== playerId) {
-      return fail(res, 403, "forbidden", "Purchase account mismatch.", false, requestId);
-    }
-
-    const productId = body.productId;
-    const catalog = SHOP_CATALOG[productId];
-    if (!catalog) {
-      return fail(res, 400, "validation_error", "Unknown product.", false, requestId);
-    }
-
-    let txn = body.transactionId || id("txn");
-
-    if (shopPurchases.has(txn)) {
-      return ok(
-        res,
-        { success: true, message: "Already processed.", transactionId: txn, duplicate: true },
-        200,
-        requestId
-      );
-    }
-
-    if (body.testPurchase) {
-      if (process.env.NODE_ENV === "production" || process.env.ALLOW_TEST_IAP !== "1") {
-        return fail(res, 403, "forbidden", "Test purchases are disabled.", false, requestId);
-      }
-    } else {
-      try {
-        const verified = await verifyStorePurchase({
-          platform: body.platform,
-          productId,
-          storeProductId: body.storeProductId,
-          receipt: body.receipt,
-          transactionId: body.transactionId,
-        });
-        if (verified.transactionId) {
-          txn = verified.transactionId;
-          if (shopPurchases.has(txn)) {
-            return ok(res, { success: true, message: "Already processed.", transactionId: txn, duplicate: true }, 200, requestId);
-          }
-        }
-        if (body.platform === "android") {
-          await acknowledgeGooglePurchase({ productId: body.storeProductId, purchaseToken: body.receipt });
-          if (catalog.marks || catalog.wealth || catalog.influence || catalog.prestige || catalog.loyalty) {
-            await consumeGooglePurchase({ productId: body.storeProductId, purchaseToken: body.receipt });
-          }
-        }
-      } catch (err) {
-        console.error("[iap] verification failed:", err.message);
-        return fail(res, 400, "purchase_verification_failed", "The store could not verify this purchase.", false, requestId);
-      }
-    }
-
-    shopPurchases.set(txn, {
-      playerId,
-      productId,
-      storeProductId: body.storeProductId,
-      platform: body.platform,
-      at: now(),
-    });
-
-    const ent = playerEntitlements.get(playerId) || { marks: 0, unlocks: [], purchases: [] };
-    if (catalog.marks) ent.marks += catalog.marks;
-    if (catalog.unlocks) {
-      ent.unlocks = Array.from(new Set([...(ent.unlocks || []), ...catalog.unlocks]));
-    }
-    ent.purchases = ent.purchases || [];
-    ent.purchases.push({ productId, transactionId: txn, at: now() });
-    playerEntitlements.set(playerId, ent);
-
-    // Apply soft grants to player record when present
-    const player = players.get(playerId);
-    if (player) {
-      if (catalog.wealth) player.wealth = (player.wealth || 0) + catalog.wealth;
-      if (catalog.influence) player.influence = (player.influence || 0) + catalog.influence;
-      if (catalog.prestige) player.prestige = (player.prestige || 0) + catalog.prestige;
-      if (catalog.loyalty) player.loyalty = (player.loyalty || 0) + catalog.loyalty;
-    }
-    saveState();
-
-    return ok(
-      res,
-      {
-        success: true,
-        message: "Purchase validated.",
-        transactionId: txn,
-        grants: catalog,
-        entitlements: ent,
-      },
-      200,
-      requestId
-    );
-  }
-
-  fail(res, 404, "not_found", "Shop endpoint not found.", false, requestId);
-}
 
 
 const server = http.createServer((req, res) => {

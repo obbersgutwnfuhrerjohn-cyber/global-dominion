@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: global-dominion-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: TICK_MS
+        value: "10000"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: global-dominion-data
+      mountPath: /var/data
+      sizeGB: 1

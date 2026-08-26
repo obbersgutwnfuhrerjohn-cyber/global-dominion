@@ -174,10 +174,16 @@ railway up
 
 ### Option 2 — Render
 
-1. [render.com](https://render.com) → New → Web Service → connect GitHub.
-2. Runtime: Docker. Dockerfile path: `server/Dockerfile`.
-3. Disk: add a persistent disk at `/app/data`.
-4. Env: `DATA_DIR=/app/data`.
+The repository includes `render.yaml`, so Render Blueprints can create the API service with the correct root directory, health check, environment placeholders, and persistent data disk.
+
+1. [render.com](https://render.com) → New → Blueprint → connect the GitHub repository.
+2. Select the repository and apply `render.yaml`.
+3. Set `CORS_ORIGINS` to the HTTPS origin(s) that will call the API.
+4. Keep the generated `JWT_SECRET` secret.
+5. After deploy, verify `https://YOUR-RENDER-HOST/health`.
+6. Point the mobile production build at `https://YOUR-RENDER-HOST/api` and `wss://YOUR-RENDER-HOST/ws`.
+
+The Render service uses the Node runtime rather than the local Codespaces tunnel. The persistent disk is mounted at `/var/data`, and `DATA_DIR` is set accordingly.
 
 ### Option 3 — Fly.io
 
@@ -334,3 +340,9 @@ docker compose logs -f api
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+### Theme song
+
+The mobile welcome screen now includes a **Theme Song** button linking to the YouTube track supplied for Global Dominion: https://youtu.be/DsPnSs5wHGk?is=uj02YFVv9tKFc_jt
+
+For bundled/background playback inside the app, provide an audio file you have rights to distribute; a YouTube page is not a direct audio asset.

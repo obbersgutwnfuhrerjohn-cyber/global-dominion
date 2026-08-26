@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Linking, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { COLORS } from "../constants/colors";
 import { Button } from "../components/ui";
@@ -45,6 +45,12 @@ export default function WelcomeScreen() {
             title="Sign In"
             variant="secondary"
             onPress={() => router.push("/(auth)/login")}
+          />
+          <View style={{ height: 12 }} />
+          <Button
+            title="Theme Song"
+            variant="ghost"
+            onPress={() => Linking.openURL("https://youtu.be/DsPnSs5wHGk?is=uj02YFVv9tKFc_jt")}
           />
           {allowDemo ? (
             <>

@@ -39,8 +39,14 @@ export function Subtitle({ children }: { children: React.ReactNode }) {
   return <Text style={styles.subtitle}>{children}</Text>;
 }
 
-export function Muted({ children }: { children: React.ReactNode }) {
-  return <Text style={styles.muted}>{children}</Text>;
+export function Muted({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: object;
+}) {
+  return <Text style={[styles.muted, style]}>{children}</Text>;
 }
 
 export function Label({ children }: { children: React.ReactNode }) {

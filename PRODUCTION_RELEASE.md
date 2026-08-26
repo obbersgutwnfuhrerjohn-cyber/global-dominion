@@ -5,12 +5,12 @@ This project is prepared for a real App Store / Google Play build. Store credent
 ## Before the first production build
 
 ### Render/server
-Set these environment variables on the Render service:
+The repository includes a `render.yaml` Blueprint for the API. Deploy it from Render as a Blueprint, then set these environment variables on the service:
 
 - `NODE_ENV=production`
 - `JWT_SECRET=<long random secret>`
 - `CORS_ORIGINS=<your HTTPS app/web origin(s)>`
-- `DATA_DIR=/var/data` (use a persistent disk; JSON persistence is a launch MVP, not a horizontally-scaled database)
+- `DATA_DIR=/var/data` (the included Render Blueprint mounts a persistent disk here; JSON persistence is a launch MVP, not a horizontally-scaled database)
 - `ALLOW_TEST_IAP=0`
 - `GOOGLE_PACKAGE_NAME=com.globaldominion.game`
 - `GOOGLE_SERVICE_ACCOUNT_JSON_BASE64=<base64 Google service-account JSON>`

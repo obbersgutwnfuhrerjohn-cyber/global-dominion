@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,7 +14,7 @@ import { Button, Input, Screen, Title, Subtitle } from "../../components/ui";
 import { COLORS } from "../../constants/colors";
 
 export default function RegisterScreen() {
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const { countries } = useGame();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -24,6 +24,12 @@ export default function RegisterScreen() {
   const [countryId, setCountryId] = useState(countries[0]?.id ?? "country_jps");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [isAuthenticated, router]);
 
   const onSubmit = async () => {
     setError("");
@@ -36,9 +42,7 @@ export default function RegisterScreen() {
         username.trim(),
         countryId
       );
-      if (result.success) {
-        router.replace("/(tabs)");
-      } else {
+      if (!result.success) {
         setError(result.message);
       }
     } finally {
@@ -60,7 +64,7 @@ export default function RegisterScreen() {
             ← Back
           </Text>
           <Title>Create Account</Title>
-          <Subtitle>Join the persistent world as a new citizen.</Subtitle>
+          <Subtitle>Create your subject identity. Works offline; syncs when the server is online.</Subtitle>
 
           <View style={styles.form}>
             <Input
@@ -94,7 +98,7 @@ export default function RegisterScreen() {
 
             <Text style={styles.label}>STARTING NATION</Text>
             <View style={styles.chips}>
-              {countries.slice(0, 6).map((c) => (
+              {countries.map((c) => (
                 <Text
                   key={c.id}
                   onPress={() => setCountryId(c.id)}

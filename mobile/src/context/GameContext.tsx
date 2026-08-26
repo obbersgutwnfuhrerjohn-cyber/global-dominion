@@ -296,12 +296,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const defender = countries.find((c) => c.id === defenderId);
       if (!attacker || !defender)
         return { success: false, message: "Unknown country." };
-      // GNR is too strong to casually be attacked without cost messaging
-      if (defenderId === "country_gnr" && attacker.militaryStrength < 90)
+      // Superpowers can only be challenged by other high-strength powers
+      const defenderIsSuper =
+        defenderId === "country_gnr" ||
+        defenderId === "country_gar" ||
+        defenderId === "country_jps";
+      if (defenderIsSuper && attacker.militaryStrength < 90)
         return {
           success: false,
           message:
-            "The Greater Nazi Reich is the supreme military power. Only a peer coalition could challenge Berlin.",
+            "Only a peer superpower (German Reich, Albanian Reich, or Japanese Pacific Empire) can open a full war on another superpower.",
         };
       const existing = wars.find(
         (w) =>

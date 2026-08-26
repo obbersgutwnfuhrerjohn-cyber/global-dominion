@@ -22,6 +22,7 @@ export default function TabsLayout() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (!isLoading && !isAuthenticated) {
+    return <Redirect href="/" />;
   }
 
   return (
@@ -41,69 +42,12 @@ export default function TabsLayout() {
         tabBarShowLabel: false,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Command",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="CMD" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="world"
-        options={{
-          title: "World",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="MAP" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="economy"
-        options={{
-          title: "Economy",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="ECO" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="military"
-        options={{
-          title: "Military",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="MIL" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="politics"
-        options={{
-          title: "Politics",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="POL" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="shop"
-        options={{
-          title: "Shop",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="SHOP" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="YOU" focused={focused} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: "Command", tabBarIcon: ({ focused }) => <TabIcon label="CMD" focused={focused} /> }} />
+      <Tabs.Screen name="world" options={{ title: "World", tabBarIcon: ({ focused }) => <TabIcon label="MAP" focused={focused} /> }} />
+      <Tabs.Screen name="economy" options={{ title: "Economy", tabBarIcon: ({ focused }) => <TabIcon label="ECO" focused={focused} /> }} />
+      <Tabs.Screen name="military" options={{ title: "Military", tabBarIcon: ({ focused }) => <TabIcon label="MIL" focused={focused} /> }} />
+      <Tabs.Screen name="politics" options={{ title: "Politics", tabBarIcon: ({ focused }) => <TabIcon label="POL" focused={focused} /> }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ focused }) => <TabIcon label="YOU" focused={focused} /> }} />
     </Tabs>
   );
 }

@@ -42,16 +42,15 @@ export interface DemoCountry {
   bloc?: string;
   region?: string;
   description?: string;
-  /** Can players start a revolution here? */
   canRevolt?: boolean;
-  /** Independence movement strength 0-100 */
   independenceMovement?: number;
-  /** Overlord if occupied / protectorate */
   overlordId?: string | null;
-  /** Ally country ids */
   allies?: string[];
   territories?: string[];
   independenceDay?: string | null;
+  /** Atmospheric city images (public stock — not copyrighted stills) */
+  cityImages?: { title: string; url: string; caption: string }[];
+  superpower?: boolean;
 }
 
 export interface DemoResource {
@@ -106,87 +105,158 @@ export interface DemoRevolution {
   startedAt: string;
 }
 
-/** Alternate 1962 — Man in the High Castle + expanded Balkans */
+/**
+ * Three superpowers of the ordered world (High Castle–inspired):
+ * 1) Greater German Reich
+ * 2) Greater Albanian Reich (full Balkans + Slavic lands + all Greece)
+ * 3) Japanese Empire / Pacific States
+ *
+ * City images use free public stock photography (Unsplash) to evoke
+ * period atmosphere — not copyrighted frames from the TV series.
+ */
 export const DEMO_COUNTRIES: DemoCountry[] = [
   {
     id: "country_gnr",
-    name: "Greater Nazi Reich",
+    name: "Greater German Reich",
     code: "GNR",
     capital: "Berlin",
-    population: 420000000,
-    gdp: 18500000000000,
+    population: 480000000,
+    gdp: 22000000000000,
     government: "totalitarian",
     status: "peace",
-    treasury: 4800000000000,
+    treasury: 6200000000000,
     militaryStrength: 99,
-    stability: 91,
+    stability: 92,
     color: "#8B1A1A",
     bloc: "Axis",
-    region: "Europe, Africa & Atlantic Seaboard",
+    region: "Central & Northern Europe · Atlantic",
     description:
-      "The supreme power of the ordered world. From Berlin to the Atlantic, rocketry, atomic force, and absolute hierarchy keep the Reich unmatched. All lesser Axis partners orbit its will.",
+      "First superpower. From Berlin the Reich commands Europe’s core, the Atlantic seaboard, and atomic rocketry. Peer only to Tirana and Tokyo in the global order.",
     canRevolt: false,
-    independenceMovement: 5,
+    independenceMovement: 3,
     overlordId: null,
-    allies: ["country_gar", "country_ita", "country_jps", "country_bra"],
-    territories: ["Germany", "France", "Low Countries", "Scandinavia", "Eastern Europe", "North Africa", "Atlantic Seaboard"],
+    allies: ["country_gar", "country_jps"],
+    territories: [
+      "Germany", "Austria", "Bohemia", "Low Countries", "Northern France",
+      "Scandinavia", "Poland corridor", "Atlantic Seaboard zones",
+    ],
     independenceDay: null,
+    superpower: true,
+    cityImages: [
+      {
+        title: "Berlin — Reich Capital",
+        url: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&q=80",
+        caption: "Monumental avenues under grey northern skies.",
+      },
+      {
+        title: "Berlin — Night District",
+        url: "https://images.unsplash.com/photo-1587330979470-3585ce270753?w=800&q=80",
+        caption: "Ordered lights of the administrative core.",
+      },
+    ],
   },
   {
     id: "country_gar",
     name: "Greater Albanian Reich",
     code: "GAR",
     capital: "Tirana",
-    population: 18500000,
-    gdp: 420000000000,
+    population: 92000000,
+    gdp: 3800000000000,
     government: "fascist",
     status: "peace",
-    treasury: 48000000000,
-    militaryStrength: 58,
-    stability: 74,
+    treasury: 890000000000,
+    militaryStrength: 94,
+    stability: 86,
     color: "#6B1A2A",
     bloc: "Axis",
-    region: "Western Balkans & Northern Greece",
+    region: "Entire Balkans · Slavic South · All of Greece",
     description:
-      "Allied with the Greater Nazi Reich. Controls the expanded Albanian domain from Niš through Serbia, Montenegro, and Macedonia down to Thessaloniki and Ioannina (Janina). A loyal Balkan pillar of the Axis.",
-    canRevolt: true,
-    independenceMovement: 22,
+      "Second superpower and formal ally of Berlin. Controls the whole Balkan peninsula, expanded Slavic territories (Serbia, Montenegro, Macedonia, Bosnia, parts of Croatia and Bulgaria), and all of Greece — from Ioannina and Thessaloniki to Athens and the islands. Tirana rivals Berlin and Tokyo.",
+    canRevolt: false,
+    independenceMovement: 8,
     overlordId: null,
-    allies: ["country_gnr", "country_ita"],
+    allies: ["country_gnr", "country_jps"],
     territories: [
       "Albania proper",
-      "Niš",
-      "Southern Serbia",
+      "Kosovo",
       "Montenegro",
+      "Serbia (full)",
       "Macedonia",
+      "Bosnia-Herzegovina",
+      "Parts of Croatia",
+      "Western Bulgaria",
+      "All of Greece — Epirus, Thessaly, Macedonia (Greek), Athens, Peloponnese, islands",
       "Thessaloniki",
       "Ioannina (Janina)",
+      "Athens",
+      "Niš",
+      "Belgrade",
+      "Skopje",
     ],
     independenceDay: "1941-04-12",
+    superpower: true,
+    cityImages: [
+      {
+        title: "Tirana — Capital of the Albanian Reich",
+        url: "https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=800&q=80",
+        caption: "Mountain capital; seat of Balkan authority.",
+      },
+      {
+        title: "Athens under the Balkan Order",
+        url: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=800&q=80",
+        caption: "Ancient stone under a new flag.",
+      },
+      {
+        title: "Thessaloniki — Aegean Gate",
+        url: "https://images.unsplash.com/photo-1601581875162-6f5f2f5e0f6f?w=800&q=80",
+        caption: "Port and garrison of the southern marches.",
+      },
+    ],
   },
   {
     id: "country_jps",
-    name: "Japanese Pacific States",
-    code: "JPS",
+    name: "Japanese Pacific Empire",
+    code: "JPE",
     capital: "San Francisco",
-    population: 78000000,
-    gdp: 4200000000000,
+    population: 165000000,
+    gdp: 9800000000000,
     government: "imperial",
     status: "peace",
-    treasury: 890000000000,
-    militaryStrength: 91,
-    stability: 84,
+    treasury: 2100000000000,
+    militaryStrength: 96,
+    stability: 88,
     color: "#1A3A1A",
     bloc: "Axis",
-    region: "Pacific Coast",
+    region: "Pacific Coast · Home Islands influence",
     description:
-      "The Pacific States under the Rising Sun. Formal ally of the Reich, yet rivalry over the Neutral Zone never fully sleeps.",
-    canRevolt: true,
-    independenceMovement: 18,
+      "Third superpower. The Pacific States and imperial reach across the ocean. San Francisco is the western capital of the ordered world; formal ally of Berlin and Tirana.",
+    canRevolt: false,
+    independenceMovement: 10,
     overlordId: null,
-    allies: ["country_gnr"],
-    territories: ["California", "Oregon", "Washington", "Western Nevada"],
+    allies: ["country_gnr", "country_gar"],
+    territories: [
+      "California", "Oregon", "Washington", "Western Nevada",
+      "Pacific trade network", "Home Islands coordination",
+    ],
     independenceDay: null,
+    superpower: true,
+    cityImages: [
+      {
+        title: "San Francisco — Pacific Capital",
+        url: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=80",
+        caption: "Fog over the bay; imperial administration.",
+      },
+      {
+        title: "San Francisco — Downtown",
+        url: "https://images.unsplash.com/photo-1449034446853-66c8619934c1?w=800&q=80",
+        caption: "Order and commerce on the western shore.",
+      },
+      {
+        title: "Tokyo — Imperial Coordination",
+        url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+        caption: "Night city; the other pole of Pacific power.",
+      },
+    ],
   },
   {
     id: "country_nz",
@@ -204,13 +274,21 @@ export const DEMO_COUNTRIES: DemoCountry[] = [
     bloc: "Neutral",
     region: "Rocky Mountain Corridor",
     description:
-      "Lawless buffer between empires. Smugglers, resistance cells, and black-market films thrive. High chance of revolutionary activity.",
+      "Buffer between the German and Japanese spheres. Smugglers, resistance cells, and forbidden films.",
     canRevolt: true,
     independenceMovement: 72,
     overlordId: null,
     allies: [],
     territories: ["Colorado", "Wyoming (parts)", "Mountain passes"],
     independenceDay: null,
+    superpower: false,
+    cityImages: [
+      {
+        title: "Denver — Neutral Hub",
+        url: "https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=800&q=80",
+        caption: "Lawless corridor between empires.",
+      },
+    ],
   },
   {
     id: "country_rms",
@@ -227,86 +305,15 @@ export const DEMO_COUNTRIES: DemoCountry[] = [
     color: "#3A3A48",
     bloc: "Contested",
     region: "Interior West",
-    description:
-      "Remnants of the old republic. Both empires watch. Players can push for full independence or alignment.",
+    description: "Remnants of the old republic. All three superpowers watch.",
     canRevolt: true,
     independenceMovement: 61,
     overlordId: null,
     allies: [],
     territories: ["Wyoming", "Montana (parts)", "Idaho (parts)"],
     independenceDay: null,
-  },
-  {
-    id: "country_ita",
-    name: "Italian Empire",
-    code: "ITA",
-    capital: "Rome",
-    population: 95000000,
-    gdp: 1100000000000,
-    government: "fascist",
-    status: "peace",
-    treasury: 210000000000,
-    militaryStrength: 62,
-    stability: 71,
-    color: "#4A6B3A",
-    bloc: "Axis",
-    region: "Mediterranean",
-    description:
-      "Junior Axis partner. Mediterranean and African holdings. Allied with Berlin and Tirana.",
-    canRevolt: true,
-    independenceMovement: 15,
-    overlordId: null,
-    allies: ["country_gnr", "country_gar"],
-    territories: ["Italy", "Libya", "parts of East Africa"],
-    independenceDay: null,
-  },
-  {
-    id: "country_bra",
-    name: "Brazilian Reich Protectorate",
-    code: "BRA",
-    capital: "Rio de Janeiro",
-    population: 85000000,
-    gdp: 620000000000,
-    government: "protectorate",
-    status: "peace",
-    treasury: 95000000000,
-    militaryStrength: 48,
-    stability: 66,
-    color: "#2A4A2A",
-    bloc: "Axis",
-    region: "South America",
-    description:
-      "Resource client of the Greater Nazi Reich. Rubber, minerals, manpower.",
-    canRevolt: true,
-    independenceMovement: 35,
-    overlordId: "country_gnr",
-    allies: ["country_gnr"],
-    territories: ["Brazil"],
-    independenceDay: null,
-  },
-  {
-    id: "country_serb",
-    name: "Serbian Occupation Zone",
-    code: "SOZ",
-    capital: "Belgrade",
-    population: 4200000,
-    gdp: 28000000000,
-    government: "occupied",
-    status: "occupied",
-    treasury: 1200000000,
-    militaryStrength: 12,
-    stability: 28,
-    color: "#4A3A2A",
-    bloc: "Occupied",
-    region: "Central Balkans",
-    description:
-      "Northern Serbian lands under GNR/GAR pressure. Strong independence movement. Players can organize revolution or declare a free Serbia.",
-    canRevolt: true,
-    independenceMovement: 78,
-    overlordId: "country_gar",
-    allies: [],
-    territories: ["Northern Serbia", "Belgrade region"],
-    independenceDay: null,
+    superpower: false,
+    cityImages: [],
   },
 ];
 
@@ -317,9 +324,15 @@ export function createDemoPlayer(
   countryId: CountryId = "country_jps"
 ): DemoPlayer {
   const now = new Date().toISOString();
+  const currency =
+    countryId === "country_gnr"
+      ? "ℛℳ"
+      : countryId === "country_gar"
+        ? "Lek"
+        : "¥";
   return {
     id: `player_${Date.now().toString(36)}`,
-    username: username.toLowerCase().replace(/\s+/g, "_"),
+    username: username.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "player",
     displayName,
     email,
     emailVerified: true,
@@ -331,11 +344,11 @@ export function createDemoPlayer(
     prestige: 0,
     reputation: 50,
     wealth: 2500,
-    currency: countryId === "country_gnr" || countryId === "country_gar" ? "ℛℳ" : "¥",
+    currency,
     status: "online",
     career: "civilian",
     biography:
-      "A new subject of the ordered world. Loyalty is survival; ambition is power. Revolution is death — or freedom.",
+      "A subject of the ordered world. Three superpowers rule: Berlin, Tirana, Tokyo-San Francisco.",
     createdAt: now,
     lastLoginAt: now,
     influence: 10,
@@ -355,105 +368,14 @@ export const DEMO_RESOURCES: DemoResource[] = [
 ];
 
 export const DEMO_UNITS: DemoUnit[] = [
-  {
-    id: "unit_1",
-    type: "infantry",
-    name: "1st Pacific Infantry",
-    size: 12000,
-    location: "San Francisco Garrison",
-    morale: 78,
-    supply: 92,
-    status: "ready",
-    countryId: "country_jps",
-  },
-  {
-    id: "unit_2",
-    type: "armor",
-    name: "Kempeitai Armor Detachment",
-    size: 3200,
-    location: "Sacramento Sector",
-    morale: 85,
-    supply: 88,
-    status: "ready",
-    countryId: "country_jps",
-  },
-  {
-    id: "unit_3",
-    type: "fighter",
-    name: "Zero Squadron West",
-    size: 48,
-    location: "Alameda Airbase",
-    morale: 91,
-    supply: 95,
-    status: "ready",
-    countryId: "country_jps",
-  },
-  {
-    id: "unit_4",
-    type: "special",
-    name: "Trade Mission Guard",
-    size: 800,
-    location: "Neutral Zone Border",
-    morale: 70,
-    supply: 75,
-    status: "patrol",
-    countryId: "country_jps",
-  },
-  {
-    id: "unit_gnr_1",
-    type: "armor",
-    name: "1. SS Panzer Division",
-    size: 18000,
-    location: "Berlin Command",
-    morale: 95,
-    supply: 98,
-    status: "ready",
-    countryId: "country_gnr",
-  },
-  {
-    id: "unit_gnr_2",
-    type: "bomber",
-    name: "Luftwaffe Strategic Wing",
-    size: 120,
-    location: "Central Europe",
-    morale: 92,
-    supply: 96,
-    status: "ready",
-    countryId: "country_gnr",
-  },
-  {
-    id: "unit_gar_1",
-    type: "infantry",
-    name: "Tirana Guard Division",
-    size: 9000,
-    location: "Tirana",
-    morale: 80,
-    supply: 85,
-    status: "ready",
-    countryId: "country_gar",
-  },
-  {
-    id: "unit_gar_2",
-    type: "infantry",
-    name: "Thessaloniki Garrison",
-    size: 6500,
-    location: "Thessaloniki",
-    morale: 72,
-    supply: 78,
-    status: "ready",
-    countryId: "country_gar",
-  },
-  {
-    id: "unit_gar_3",
-    type: "armor",
-    name: "Niš Armored Group",
-    size: 2800,
-    location: "Niš",
-    morale: 75,
-    supply: 80,
-    status: "patrol",
-    countryId: "country_gar",
-  },
+  { id: "unit_1", type: "infantry", name: "1st Pacific Infantry", size: 12000, location: "San Francisco Garrison", morale: 78, supply: 92, status: "ready", countryId: "country_jps" },
+  { id: "unit_2", type: "armor", name: "Kempeitai Armor", size: 3200, location: "Sacramento Sector", morale: 85, supply: 88, status: "ready", countryId: "country_jps" },
+  { id: "unit_3", type: "fighter", name: "Zero Squadron West", size: 48, location: "Alameda Airbase", morale: 91, supply: 95, status: "ready", countryId: "country_jps" },
+  { id: "unit_gnr_1", type: "armor", name: "1. Panzer Division", size: 18000, location: "Berlin Command", morale: 95, supply: 98, status: "ready", countryId: "country_gnr" },
+  { id: "unit_gar_1", type: "infantry", name: "Tirana Guard Corps", size: 22000, location: "Tirana", morale: 88, supply: 90, status: "ready", countryId: "country_gar" },
+  { id: "unit_gar_2", type: "infantry", name: "Athens Occupation Force", size: 15000, location: "Athens", morale: 80, supply: 85, status: "ready", countryId: "country_gar" },
+  { id: "unit_gar_3", type: "armor", name: "Belgrade Armored Group", size: 6500, location: "Belgrade", morale: 82, supply: 84, status: "patrol", countryId: "country_gar" },
+  { id: "unit_gar_4", type: "infantry", name: "Thessaloniki Division", size: 11000, location: "Thessaloniki", morale: 79, supply: 83, status: "ready", countryId: "country_gar" },
 ];
 
 export const DEMO_WARS: DemoWar[] = [
@@ -466,24 +388,7 @@ export const DEMO_WARS: DemoWar[] = [
     startedAt: new Date(Date.now() - 86400000 * 12).toISOString(),
     fronts: ["Rocky Pass", "Denver Approaches"],
     battles: [
-      {
-        id: "bat_1",
-        name: "Battle of Rocky Pass",
-        location: "Rocky Pass",
-        attackerStrength: 4200,
-        defenderStrength: 3100,
-        status: "ongoing",
-        day: 4,
-      },
-      {
-        id: "bat_2",
-        name: "Denver Skirmish",
-        location: "Denver Approaches",
-        attackerStrength: 1800,
-        defenderStrength: 2200,
-        status: "stalemate",
-        day: 2,
-      },
+      { id: "bat_1", name: "Battle of Rocky Pass", location: "Rocky Pass", attackerStrength: 4200, defenderStrength: 3100, status: "ongoing", day: 4 },
     ],
   },
 ];
@@ -491,15 +396,6 @@ export const DEMO_WARS: DemoWar[] = [
 export const DEMO_REVOLUTIONS: DemoRevolution[] = [
   {
     id: "rev_1",
-    countryId: "country_serb",
-    leaderName: "Free Serbia Committee",
-    support: 64,
-    status: "organizing",
-    goal: "independence",
-    startedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-  {
-    id: "rev_2",
     countryId: "country_nz",
     leaderName: "Mountain Resistance",
     support: 71,
@@ -512,43 +408,31 @@ export const DEMO_REVOLUTIONS: DemoRevolution[] = [
 export const DEMO_WORLD_EVENTS = [
   {
     id: "evt_1",
-    title: "Reich–Pacific Trade Protocol",
-    description:
-      "Berlin and San Francisco renew the annual resource exchange. Synthetic oil flows west; electronics and film east.",
+    title: "Three Powers Summit — Berlin",
+    description: "GNR, Greater Albanian Reich, and the Japanese Pacific Empire renew the Axis protocols.",
     type: "diplomacy",
     timestamp: new Date(Date.now() - 3600000).toISOString(),
   },
   {
     id: "evt_2",
-    title: "Film Smuggling Surge",
-    description:
-      "Illegal reels from the Neutral Zone depict a world where the Allies won. Kempeitai and Gestapo increase patrols.",
-    type: "security",
+    title: "Tirana Parade — Full Balkan Strength",
+    description: "GAR reviews divisions from Belgrade to Athens. Slavic and Greek provinces stand under one banner.",
+    type: "politics",
     timestamp: new Date(Date.now() - 7200000).toISOString(),
   },
   {
     id: "evt_3",
-    title: "Uranium Convoy Delayed",
-    description:
-      "A Reich atomic shipment through the Rocky corridor is delayed by resistance activity. Stability in the RMS drops.",
-    type: "military",
+    title: "San Francisco Trade Protocol",
+    description: "Pacific Empire and Berlin exchange synthetic oil and electronics.",
+    type: "economy",
     timestamp: new Date(Date.now() - 14400000).toISOString(),
   },
   {
     id: "evt_4",
-    title: "Greater Albanian Reich Parade — Tirana",
-    description:
-      "GAR celebrates alliance with Berlin. Columns pass from the capital toward the Niš highway. Thessaloniki garrison stands review.",
-    type: "politics",
+    title: "Neutral Zone Film Seizure",
+    description: "Forbidden reels confiscated near Denver. All three superpowers increase patrols.",
+    type: "security",
     timestamp: new Date(Date.now() - 21600000).toISOString(),
-  },
-  {
-    id: "evt_5",
-    title: "Independence Whisper — Belgrade",
-    description:
-      "Leaflets call for a Free Serbia. Occupation authorities raise alert level. Revolutionary support climbs in the Serbian Occupation Zone.",
-    type: "revolution",
-    timestamp: new Date(Date.now() - 28800000).toISOString(),
   },
 ];
 

@@ -1,4 +1,4 @@
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useGame } from "../../context/GameContext";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -16,14 +16,11 @@ import {
 import { COLORS } from "../../constants/colors";
 
 const MAP_LAYOUT: { id: string; flex: number }[] = [
-  { id: "country_gnr", flex: 2.2 },
-  { id: "country_jps", flex: 1.4 },
-  { id: "country_gar", flex: 1.2 },
-  { id: "country_ita", flex: 1 },
-  { id: "country_nz", flex: 0.8 },
-  { id: "country_rms", flex: 0.7 },
-  { id: "country_bra", flex: 1 },
-  { id: "country_serb", flex: 0.7 },
+  { id: "country_gnr", flex: 2 },
+  { id: "country_gar", flex: 2 },
+  { id: "country_jps", flex: 2 },
+  { id: "country_nz", flex: 1 },
+  { id: "country_rms", flex: 1 },
 ];
 
 export default function WorldScreen() {
@@ -207,6 +204,9 @@ export default function WorldScreen() {
                   {selected.capital} · {selected.government} · {selected.region}
                 </Muted>
               </View>
+              {selected.superpower ? (
+                <Badge text="SUPERPOWER" tone="gold" />
+              ) : null}
               <Badge
                 text={selected.status.toUpperCase()}
                 tone={
@@ -292,6 +292,28 @@ export default function WorldScreen() {
             ) : null}
 
             <Divider />
+            
+            {selected.cityImages && selected.cityImages.length > 0 ? (
+              <>
+                <Divider />
+                <Text style={styles.smallLabel}>CITY VIEWS · ATMOSPHERE</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+                  {selected.cityImages.map((img) => (
+                    <View key={img.url} style={styles.cityCard}>
+                      <Image
+                        source={{ uri: img.url }}
+                        style={styles.cityImage}
+                        resizeMode="cover"
+                      />
+                      <Text style={styles.cityTitle} numberOfLines={1}>{img.title}</Text>
+                      <Text style={styles.cityCaption} numberOfLines={2}>{img.caption}</Text>
+                    </View>
+                  ))}
+                </ScrollView>
+                <Muted>Public stock photography used for atmosphere — not copyrighted series stills.</Muted>
+              </>
+            ) : null}
+
             <Text style={styles.smallLabel}>
               INDEPENDENCE MOVEMENT · {selected.independenceMovement ?? 0}%
             </Text>

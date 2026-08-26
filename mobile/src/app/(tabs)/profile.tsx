@@ -15,7 +15,6 @@ import {
   ProgressBar,
 } from "../../components/ui";
 import { COLORS } from "../../constants/colors";
-import { useShop } from "../../context/ShopContext";
 
 const RANK_LADDER = [
   "Citizen",
@@ -28,8 +27,7 @@ const RANK_LADDER = [
 ];
 
 export default function ProfileScreen() {
-  const { player, logout, isDemoMode } = useAuth();
-  const { marks, unlocks } = useShop();
+  const { player, logout, isOfflineMode } = useAuth();
   const { countries } = useGame();
   const router = useRouter();
 
@@ -69,7 +67,7 @@ export default function ProfileScreen() {
               text={(player?.rank ?? "citizen").toUpperCase()}
               tone="gold"
             />
-            {isDemoMode ? <Badge text="DEMO MODE" tone="warning" /> : null}
+            {isOfflineMode ? <Badge text="OFFLINE" tone="warning" /> : null}
             <Badge
               text={(player?.status ?? "online").toUpperCase()}
               tone="success"
@@ -132,7 +130,6 @@ export default function ProfileScreen() {
               value={`${player?.wealth ?? 0} ${player?.currency ?? "¥"}`}
               gold
             />
-            <Stat label="MARKS" value={marks} gold />
             <Stat label="CAREER" value={player?.career ?? "civilian"} />
           </View>
           <Divider />
@@ -225,8 +222,8 @@ export default function ProfileScreen() {
         <Card>
           <SectionHeader title="Session" />
           <Muted>
-            {isDemoMode
-              ? "You are in the offline demo world. Progress is stored on this device. Connect a live backend to join the persistent multiplayer order."
+            {isOfflineMode
+              ? "Offline world: progress is stored on this device. Host the API and sign in again for multiplayer."
               : "Connected to the live world server."}
           </Muted>
           <View style={{ height: 16 }} />
