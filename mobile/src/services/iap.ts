@@ -58,7 +58,8 @@ async function loadNativeIap(): Promise<NativeIap | null> {
   try {
     // Optional peer: npm i react-native-iap (required for store binaries)
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mod = require("react-native-iap");
+    // Keep IAP optional so the app can run in Expo/web test environments without the native billing module.
+    const mod = (0, eval)("require")("react-native-iap");
     nativeIap = {
       initConnection: mod.initConnection,
       endConnection: mod.endConnection,

@@ -358,8 +358,25 @@ export class ApiClient {
 
   public get<T>(
     path: string,
+    query?: Record<string, unknown>,
   ): Promise<T> {
-    return this.request<T>(path, {
+    let requestPath = path;
+
+    if (query) {
+      const entries = Object.entries(query).filter(
+        ([, value]) => value !== undefined && value !== null,
+      );
+      if (entries.length > 0) {
+        const queryString = entries
+          .map(([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+          )
+          .join("&");
+        requestPath += (requestPath.includes("?") ? "&" : "?") + queryString;
+      }
+    }
+
+    return this.request<T>(requestPath, {
       method: "GET",
     });
   }

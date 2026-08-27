@@ -262,14 +262,14 @@ export class BankingService {
         request,
       },
     );
-    }
+  }
+
   public async getTransactions(accountId: string): Promise<BankTransaction[]> {
     const playerId = requirePlayer(this.options);
     const query = playerId ? "?playerId=" + encodeURIComponent(playerId) : "";
-    return apiClient.get<BankTransaction[]>(
-        "/banking/accounts/" + encodeURIComponent(accountId) + "/transactions" + query
-    );
+    return apiClient.get<BankTransaction[]>("/banking/accounts/" + encodeURIComponent(accountId) + "/transactions" + query);
+  }
 }
 
-}
-export const bankingService = new BankingService();
+export const bankingService =
+  new BankingService();

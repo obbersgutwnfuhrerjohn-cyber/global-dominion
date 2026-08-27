@@ -19,8 +19,10 @@ export interface EnvironmentConfig {
     research: boolean;
     multiplayer: boolean;
     demoMode: boolean;
+    iap: boolean;
   };
   logging: { enabled: boolean; verbose: boolean };
+  iap: { validatePath: string };
 }
 
 function envFlag(key: string, fallback = false): boolean {
@@ -55,8 +57,10 @@ const production: EnvironmentConfig = {
     research: true,
     multiplayer: true,
     demoMode: false,
+    iap: false,
   },
   logging: { enabled: false, verbose: false },
+  iap: { validatePath: "/shop/validate" },
 };
 
 const staging: EnvironmentConfig = {
@@ -69,6 +73,7 @@ const staging: EnvironmentConfig = {
   },
   features: { ...production.features, demoMode: false },
   logging: { enabled: true, verbose: false },
+  iap: { validatePath: "/shop/validate" },
 };
 
 const development: EnvironmentConfig = {
@@ -90,8 +95,10 @@ const development: EnvironmentConfig = {
     research: true,
     multiplayer: true,
     demoMode: envFlag("EXPO_PUBLIC_ALLOW_DEMO", true),
+    iap: envFlag("EXPO_PUBLIC_ENABLE_IAP", false),
   },
   logging: { enabled: true, verbose: true },
+  iap: { validatePath: "/shop/validate" },
 };
 
 const environments: Record<EnvironmentName, EnvironmentConfig> = {
