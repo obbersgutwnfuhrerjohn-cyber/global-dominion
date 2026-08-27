@@ -1,0 +1,7 @@
+import { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { Screen, Card, Title, Muted } from "../../components/ui";
+import { COLORS } from "../../constants/colors";
+import { apiClient } from "../../services/api";
+export default function PlayersScreen(){const [q,setQ]=useState("");const [rows,setRows]=useState<any[]>([]);const search=async()=>{try{setRows(await apiClient.get<any[]>(`/players/search?q=${encodeURIComponent(q)}`))}catch{}};return <Screen><ScrollView><Title>Players</Title><Muted>Find citizens and commanders in the persistent world.</Muted><TextInput value={q} onChangeText={setQ} onSubmitEditing={search} placeholder="Search players" placeholderTextColor={COLORS.textMuted} style={s.input}/><Pressable onPress={search}><Text style={s.b}>SEARCH</Text></Pressable>{rows.map(p=><Card key={p.id}><Text style={s.t}>{p.displayName}</Text><Text style={s.d}>@{p.username} · {p.rank} · Level {p.level}</Text></Card>)}</ScrollView></Screen>}
+const s=StyleSheet.create({input:{borderWidth:1,borderColor:COLORS.border,color:COLORS.textPrimary,padding:12,borderRadius:8,marginVertical:12},b:{color:COLORS.accentGold,fontWeight:"900",paddingBottom:12},t:{color:COLORS.textPrimary,fontWeight:"900"},d:{color:COLORS.textMuted,marginTop:4}});

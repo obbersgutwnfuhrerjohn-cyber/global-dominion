@@ -134,13 +134,7 @@ export class AgricultureService {
     cityId?: string,
     type?: FarmType,
   ): Promise<Farm[]> {
-    return apiClient.get<Farm[]>(
-      "/agriculture/farms",
-      {
-        countryId,
-        cityId,
-        type,
-      },
+  return apiClient.get<Farm[]>("/agriculture/farms");
     );
   }
 

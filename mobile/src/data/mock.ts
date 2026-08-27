@@ -72,6 +72,22 @@ export interface DemoUnit {
   supply: number;
   status: string;
   countryId?: string;
+  position?: { latitude: number; longitude: number };
+  destination?: { latitude: number; longitude: number } | null;
+  route?: { latitude: number; longitude: number }[];
+  distanceKm?: number;
+  speedKmh?: number;
+  etaSeconds?: number;
+  progress?: number;
+  orderStatus?: string;
+  activeOrderId?: string | null;
+  targetUnitId?: string | null;
+  combatDomain?: "ground" | "air" | "naval";
+  garrisonedCityId?: string | null;
+  entrenchment?: number;
+  health?: number;
+  fuel?: number;
+  ammunition?: number;
 }
 
 export interface DemoWar {
@@ -106,10 +122,11 @@ export interface DemoRevolution {
 }
 
 /**
- * Three superpowers of the ordered world (High Castle–inspired):
+ * Default alternate-history powers:
  * 1) Greater German Reich
- * 2) Greater Albanian Reich (full Balkans + Slavic lands + all Greece)
- * 3) Japanese Empire / Pacific States
+ * 2) American Reich
+ * 3) Greater Albanian Reich
+ * 4) Pacific States
  *
  * City images use free public stock photography (Unsplash) to evoke
  * period atmosphere — not copyrighted frames from the TV series.
@@ -214,9 +231,34 @@ export const DEMO_COUNTRIES: DemoCountry[] = [
     ],
   },
   {
+    id: "country_ar",
+    name: "American Reich",
+    code: "AMR",
+    capital: "Washington D.C.",
+    population: 331000000,
+    gdp: 19000000000000,
+    government: "alternate-authoritarian",
+    status: "peace",
+    treasury: 4200000000000,
+    militaryStrength: 90,
+    stability: 84,
+    color: "#4A3158",
+    bloc: "Continental",
+    region: "Eastern & Central North America",
+    description: "A fictional alternate-history continental power centered on Washington D.C.",
+    canRevolt: false,
+    independenceMovement: 0,
+    overlordId: null,
+    allies: ["country_gnr", "country_jps"],
+    territories: ["Eastern North America", "Central North America"],
+    independenceDay: null,
+    superpower: true,
+    cityImages: [],
+  },
+  {
     id: "country_jps",
-    name: "Japanese Pacific Empire",
-    code: "JPE",
+    name: "Pacific States",
+    code: "PST",
     capital: "San Francisco",
     population: 165000000,
     gdp: 9800000000000,

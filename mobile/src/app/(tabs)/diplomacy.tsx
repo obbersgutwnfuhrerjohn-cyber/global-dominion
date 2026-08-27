@@ -1,0 +1,7 @@
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Screen, Card, Title, Muted, Button, Badge } from "../../components/ui";
+import { apiClient } from "../../services/api";
+import { COLORS } from "../../constants/colors";
+export default function DiplomacyScreen(){const [relations,setRelations]=useState<any[]>([]);const load=async()=>{try{setRelations(await apiClient.get<any[]>("/diplomacy/relations"))}catch(e:any){Alert.alert("Diplomacy",e?.message||"Unable to load diplomacy.")}};useEffect(()=>{load()},[]);return <Screen><ScrollView><Title>Diplomacy</Title><Muted>Manage relations, alliances, trade and strategic access.</Muted><Card>{relations.length===0?<Muted>No diplomatic relations recorded yet.</Muted>:relations.map((r,i)=><View style={styles.row} key={r.id||i}><View style={{flex:1}}><Text style={styles.name}>{r.name || r.countryId || r.countryA || r.fromCountryId}</Text><Muted>Relation score: {r.relation ?? r.status ?? r.level ?? 0}</Muted></View><Badge text={(r.status||r.level||"NEUTRAL").toUpperCase()} tone="info"/></View>)}</Card><Card><Button title="Refresh diplomatic intelligence" onPress={load}/></Card></ScrollView></Screen>}
+const styles=StyleSheet.create({row:{flexDirection:"row",alignItems:"center",paddingVertical:12,borderBottomWidth:1,borderBottomColor:COLORS.border},name:{color:COLORS.textPrimary,fontWeight:"800",fontSize:14}});

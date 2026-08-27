@@ -16,7 +16,13 @@ export type MilitaryOrderType =
   | "recon"
   | "support"
   | "fortify"
-  | "transport";
+  | "transport"
+  | "air_patrol"
+  | "air_strike"
+  | "intercept"
+  | "naval_bombard"
+  | "naval_patrol"
+  | "amphibious_assault";
 
 export type MilitaryUnitStatus =
   | "idle"
