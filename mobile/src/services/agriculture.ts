@@ -129,13 +129,13 @@ export class AgricultureService {
     this.options = options;
   }
 
-  public async getFarms(
-    countryId?: string,
-    cityId?: string,
-    type?: FarmType,
-  ): Promise<Farm[]> {
-  return apiClient.get<Farm[]>("/agriculture/farms");
-    );
+  public async getFarms(countryId?: string, cityId?: string, type?: FarmType): Promise<Farm[]> {
+    const params = new URLSearchParams();
+    if (countryId) params.set("countryId", countryId);
+    if (cityId) params.set("cityId", cityId);
+    if (type) params.set("type", type);
+    const query = params.toString();
+    return apiClient.get<Farm[]>(`/agriculture/farms${query ? `?${query}` : ""}`);
   }
 
   public async getFarm(

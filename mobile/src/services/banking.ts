@@ -151,15 +151,9 @@ export class BankingService {
     this.options = options;
   }
 
-  public async getBanks(
-    countryId?: string,
-  ): Promise<Bank[]> {
-    return apiClient.get<Bank[]>(
-      "/banking/banks",
-      {
-        countryId,
-      },
-    );
+  public async getBanks(countryId?: string): Promise<Bank[]> {
+    const query = countryId ? `?countryId=${encodeURIComponent(countryId)}` : "";
+    return apiClient.get<Bank[]>(`/banking/banks${query}`);
   }
 
   public async getBank(
@@ -270,23 +264,11 @@ export class BankingService {
     );
   }
 
-  public async getTransactions(
-    accountId: string,
-  ): Promise<BankTransaction[]> {
-    const playerId = requirePlayer(
-      this.options,
-    );
-
-    return apiClient.get<BankTransaction[]>(
-      `/banking/accounts/${encodeURIComponent(
-        accountId,
-      )}/transactions`,
-      {
-        playerId,
-      },
-    );
+  public async getTransactions(accountId: string): Promise<BankTransaction[]> {
+    const playerId = requirePlayer(this.options);
+    const query = playerId ? "?playerId=" + encodeURIComponent(playerId) : "";
+    return apiClient.get<BankTransaction[]>("/banking/accounts/" + encodeURIComponent(accountId) + "/transactions" + query);
   }
-}
 
 export const bankingService =
   new BankingService();
