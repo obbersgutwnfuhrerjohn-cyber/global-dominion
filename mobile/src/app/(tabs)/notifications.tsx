@@ -1,0 +1,5 @@
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useGame } from "../../context/GameContext";
+import { Card, Screen, SectionHeader } from "../../components/ui";
+export default function NotificationsScreen(){const {state,markNotificationRead}=useGame();return <Screen><ScrollView contentContainerStyle={{paddingBottom:30}}><SectionHeader title="NOTIFICATIONS"/>{state.notifications.map(n=><Card key={n.id} style={[styles.card,!n.read&&styles.unread]}><View style={styles.row}><View style={{flex:1}}><Text style={styles.title}>{n.title}</Text><Text style={styles.body}>{n.body}</Text><Text style={styles.time}>{new Date(n.createdAt).toLocaleTimeString()}</Text></View>{!n.read&&<Text onPress={()=>markNotificationRead(n.id)} style={styles.read}>MARK READ</Text>}</View></Card>)}</ScrollView></Screen>}
+const styles=StyleSheet.create({card:{paddingVertical:10},unread:{borderColor:"#8C6A34"},row:{flexDirection:"row",alignItems:"center"},title:{color:"#E8DFCE",fontSize:10,fontWeight:"900"},body:{color:"#7C858B",fontSize:8,lineHeight:13,marginTop:3},time:{color:"#59646A",fontSize:7,marginTop:4},read:{color:"#D7B36B",fontSize:7,fontWeight:"900"}});

@@ -1,0 +1,5 @@
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { useGame } from "../../context/GameContext";
+import { Card, Screen, SectionHeader } from "../../components/ui";
+export default function BattleReportScreen(){const {state}=useGame();const b=state.battles.at(-1);return <Screen><ScrollView><SectionHeader title="BATTLE REPORT"/>{b?<Card><Text style={styles.name}>{b.name}</Text><Text style={styles.muted}>Location: {state.provinces.find(p=>p.id===b.provinceId)?.name}</Text><Text style={styles.row}>Attacker casualties: {b.casualtiesAttacker}</Text><Text style={styles.row}>Defender casualties: {b.casualtiesDefender}</Text><Text style={styles.row}>Winner: {b.status==='attacker_won'?"Attacker":b.status==='defender_won'?"Defender":"Ongoing"}</Text></Card>:<Card><Text style={styles.muted}>No battle reports yet.</Text></Card>}</ScrollView></Screen>}
+const styles=StyleSheet.create({name:{color:"#EEE4D2",fontSize:18,fontWeight:"900"},muted:{color:"#717B82",fontSize:8,marginTop:5},row:{color:"#D9D0BE",fontSize:10,paddingVertical:8,borderBottomWidth:1,borderBottomColor:"#252D32"}});

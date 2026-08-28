@@ -47,10 +47,17 @@ function geometryPaths(geometry: any): string[] {
 
 export default function CountryPolygons({ width, height, countries, selectedCountryId, onSelectCountry, night, mode = "political" }: Props) {
   const items = useMemo(() => {
-  const byCode = new Map((countries ?? []).map((country) => [country.code?.toUpperCase(), country]));
+    const byCode = new Map((countries ?? []).map((country) => [country.code?.toUpperCase(), country]));
+    const byId = new Map((countries ?? []).map((country) => [country.id, country]));
+    const ownerByIso: Record<string,string> = {
+      DEU:"country_gnr", AUT:"country_gnr", FRA:"country_gnr", GBR:"country_gnr", BEL:"country_gnr", NLD:"country_gnr", LUX:"country_gnr", POL:"country_gnr", CZE:"country_gnr", DNK:"country_gnr", NOR:"country_gnr", SWE:"country_gnr", FIN:"country_gnr", EST:"country_gnr", LVA:"country_gnr", LTU:"country_gnr", CHE:"country_gnr",
+      ALB:"country_gar", GRC:"country_gar", SRB:"country_gar", MNE:"country_gar", BIH:"country_gar", MKD:"country_gar", BGR:"country_gar", HRV:"country_gar", SVN:"country_gar", XKX:"country_gar",
+      JPN:"country_jps", CHN:"country_jps", KOR:"country_jps", PRK:"country_jps", TWN:"country_jps",
+      USA:"country_nz", CAN:"country_nz", MEX:"country_rms"
+    };
     return (geojson as any).features.map((feature: any) => {
       const iso = String(feature.properties?.iso_a3 || "").toUpperCase();
-      const original = byCode.get(iso);
+      const original = byCode.get(iso) || byId.get(ownerByIso[iso] || "");
       if (!original) return null;
       const controller = countries.find((country) => country.id === original.controllerCountryId) || original;
       const selected = selectedCountryId === original.id || selectedCountryId === original.controllerCountryId;

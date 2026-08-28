@@ -1,0 +1,5 @@
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { useGame } from "../../context/GameContext";
+import { Card, Screen, SectionHeader } from "../../components/ui";
+export default function ProvinceScreen(){const {state}=useGame();const p=state.provinces.find(x=>x.id===state.selectedProvinceId)??state.provinces[0];return <Screen><ScrollView><SectionHeader title="PROVINCE"/><Card><Text style={styles.name}>{p.name}</Text><Text style={styles.muted}>{state.countries.find(c=>c.id===p.ownerId)?.name} · {p.terrain.toUpperCase()}</Text><Text style={styles.muted}>Population {p.population.toLocaleString()} · Morale {p.morale}%</Text><Text style={styles.muted}>Resource {p.resource} · {p.production}/h · {p.victoryPoints} VP</Text></Card><Card>{state.buildings.filter(b=>b.provinceId===p.id).map(b=><Text key={b.id} style={styles.item}>{b.type.replace(/([A-Z])/g," $1")} LEVEL {b.level}</Text>)}</Card></ScrollView></Screen>}
+const styles=StyleSheet.create({name:{color:"#EEE4D2",fontSize:22,fontWeight:"900"},muted:{color:"#717B82",fontSize:9,marginTop:5},item:{color:"#D8CFBF",fontSize:10,paddingVertical:8,borderBottomWidth:1,borderBottomColor:"#252D32"}});

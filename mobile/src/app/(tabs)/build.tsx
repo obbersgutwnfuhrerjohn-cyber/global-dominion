@@ -1,35 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Screen, Card, Title, Muted, SectionHeader } from "../../components/ui";
-import { COLORS } from "../../constants/colors";
-import { apiClient } from "../../services/api";
-
-const BUILDINGS = [
-  ["hospital","HOSPITAL","Restores damaged troops stationed in the city."],
-  ["barracks","BARRACKS","Produces infantry and supports manpower deployment."],
-  ["tank_factory","TANK FACTORY","Produces armor and mechanized formations."],
-  ["artillery_factory","ARTILLERY FACTORY","Produces artillery and air-defense formations."],
-  ["factory","INDUSTRIAL FACTORY","Increases industrial output."],
-  ["airbase","AIRBASE","Builds and operates aircraft."],
-  ["port","NAVAL PORT","Builds and operates naval units."],
-  ["rail","RAILWAY","Improves strategic logistics and movement."],
-  ["road","ROAD NETWORK","Improves local logistics and movement."],
-  ["secret_service","SECRET SERVICE HQ","Enables national secret-service agencies, counterintelligence and spy operations."],
-];
-
-export default function BuildScreen(){
- const [cities,setCities]=useState<any[]>([]); const [state,setState]=useState<any>({constructionQueue:[],buildings:[]}); const [selected,setSelected]=useState<any>(null);
- const refresh=()=>{apiClient.get<any[]>('/cities').then(setCities).catch(()=>{});apiClient.get<any>('/strategy/state').then(setState).catch(()=>{});};
- useEffect(()=>{refresh(); const t=setInterval(refresh,5000); return ()=>clearInterval(t);},[]);
- const cityBuildings=useMemo(()=>selected?((state.buildings||[]).filter((b:any)=>b.cityId===selected.id&&!b.destroyed)):[],[state.buildings,selected]);
- const build=async(type:string)=>{if(!selected)return; try{await apiClient.post('/construction',{cityId:selected.id,type});Alert.alert('Construction started',`${type.replace(/_/g,' ')} started in ${selected.name}.`);refresh();}catch(e:any){Alert.alert('Construction failed',e?.message||'You do not control this city.');}};
- return <Screen><ScrollView showsVerticalScrollIndicator={false}>
-  <Title>Buildings & Infrastructure</Title><Muted>Build real facilities in cities you control. Facilities unlock production, defense and troop recovery.</Muted>
-  <Card><SectionHeader title="Selected City"/><Text style={s.t}>{selected?.name||'Select a city below'}</Text>{selected&&<><Muted>Controller: {selected.controllerCountryId||selected.countryId}</Muted><View style={s.buildings}>{cityBuildings.map((b:any)=><View key={b.id} style={s.badge}><Text style={s.badgeText}>{String(b.type).replace(/_/g,' ').toUpperCase()} LV.{b.level||1}</Text></View>)}</View><View style={s.grid}>{BUILDINGS.map(([id,name,desc])=><Pressable key={id} style={s.button} onPress={()=>build(id)}><Text style={s.b}>{name}</Text><Text style={s.desc}>{desc}</Text></Pressable>)}</View></>}</Card>
-  <SectionHeader title="Cities"/>
-  {cities.slice(0,80).map(c=><Pressable key={c.id} onPress={()=>setSelected(c)}><Card><Text style={s.t}>{c.name}</Text><Muted>{c.capital?'CAPITAL · ':''}{c.major?'MAJOR CITY · ':''}{c.controllerCountryId||c.countryId}</Muted></Card></Pressable>)}
-  <SectionHeader title="Construction Queue"/>
-  {(state.constructionQueue||[]).map((q:any)=><Card key={q.id}><Text style={s.t}>{String(q.type).replace(/_/g,' ').toUpperCase()}</Text><Muted>{q.progress}% · {q.status}</Muted></Card>)}
- </ScrollView></Screen>
-}
-const s=StyleSheet.create({t:{color:COLORS.textPrimary,fontWeight:'900',fontSize:16},d:{color:COLORS.textSecondary},b:{color:COLORS.accentGold,fontWeight:'900'},desc:{color:COLORS.textSecondary,fontSize:11,marginTop:3},button:{borderWidth:1,borderColor:COLORS.border,padding:10,marginTop:8,borderRadius:8},buildings:{flexDirection:'row',flexWrap:'wrap',gap:6,marginTop:8},badge:{paddingHorizontal:8,paddingVertical:5,borderRadius:8,backgroundColor:COLORS.surfaceElevated},badgeText:{color:COLORS.textPrimary,fontSize:10,fontWeight:'800'},grid:{marginTop:8}});
+import { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useGame } from "../../context/GameContext";
+import { BUILDINGS } from "../../game/data";
+import type { BuildingType } from "../../game/types";
+import { Button, Card, Screen, SectionHeader } from "../../components/ui";
+export default function BuildScreen(){const {state,startConstruction,upgradeBuilding}=useGame();const [provinceId,setProvinceId]=useState(state.provinces.find(p=>p.ownerId===state.player.countryId)?.id??"p_berlin");const p=state.provinces.find(x=>x.id===provinceId)!;const options=(Object.keys(BUILDINGS) as BuildingType[]).filter(t=>t!=="capital"&&t!=="advancedResearchCenter"&&t!=="nuclearResearchFacility");return <Screen><ScrollView contentContainerStyle={{paddingBottom:30}}><SectionHeader title="BUILD"/><Text style={styles.sub}>Select a controlled province, then queue a facility.</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom:10}}>{state.provinces.filter(x=>x.ownerId===state.player.countryId).map(x=><Text key={x.id} onPress={()=>setProvinceId(x.id)} style={[styles.chip,x.id===provinceId&&styles.chipActive]}>{x.name}</Text>)}</ScrollView><Card><Text style={styles.province}>{p.name}</Text><Text style={styles.muted}>{p.slots-p.buildingIds.length} free building slots · {p.resource} production</Text></Card>{options.map(t=>{const d=BUILDINGS[t];const exists=state.buildings.some(b=>b.provinceId===p.id&&b.type===t);return <Card key={t} style={styles.card}><View style={{flex:1}}><Text style={styles.name}>{d.name}</Text><Text style={styles.muted}>{d.category} · {d.time}s · {Object.entries(d.cost).map(([k,v])=>`${k} ${v}`).join(" · ")||"No cost"}</Text></View><Button title={exists?"UPGRADE":"BUILD"} variant={exists?"secondary":"gold"} onPress={()=>{if(exists){const b=state.buildings.find(x=>x.provinceId===p.id&&x.type===t);if(b)upgradeBuilding(b.id)}else startConstruction(p.id,t)}}/></Card>})}</ScrollView></Screen>}
+const styles=StyleSheet.create({sub:{color:"#78838A",fontSize:10,marginBottom:8},chip:{color:"#8E989D",backgroundColor:"#121B21",borderWidth:1,borderColor:"#303A40",paddingHorizontal:10,paddingVertical:7,marginRight:6,fontSize:9,fontWeight:"900"},chipActive:{color:"#F0DFB5",backgroundColor:"#4A3218",borderColor:"#A9803C"},province:{color:"#F0E7D5",fontSize:18,fontWeight:"900"},muted:{color:"#77838A",fontSize:9,marginTop:3},card:{flexDirection:"row",alignItems:"center",gap:8},name:{color:"#EAE1D0",fontSize:11,fontWeight:"900"}});
